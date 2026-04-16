@@ -339,6 +339,9 @@ export default function WorkflowSection({ isActive, eventData }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showActionModal, setShowActionModal] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [pipelineResults, setPipelineResults] = useState(mockResults);
+  const [sessionId, setSessionId] = useState(null);
+  const [apiResponseData, setApiResponseData] = useState(null);
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -347,11 +350,48 @@ export default function WorkflowSection({ isActive, eventData }) {
     }
   }, [isActive]);
 
-  const runAgent = (idx) => {
+  const runAgent = async (idx) => {
     setCurrentAgent(idx);
     setSelectedItems([]);
     setShowResults(false);
-    setTimeout(() => setShowResults(true), 1500); // Wait 1.5s simulating work
+
+    if (idx === 0 && eventData) {
+      try {
+        const prompt = `Create a ${eventData.eventType} event in ${eventData.city} for ${eventData.attendees} attendees.`;
+        const res = await fetch('http://localhost:5000/api/init_and_sponsor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        
+        setSessionId(data.session_id);
+        setApiResponseData(data); // Store for console logging
+
+        if (data.sponsors && data.sponsors.length > 0) {
+          const sponsorItems = data.sponsors.map((s, i) => ({
+            name: s.name || s.company_name || s.company || `Sponsor ${i+1}`,
+            role: s.industry || s.reason || 'Sponsorship Match',
+            match: s.match_score || Math.floor(Math.random() * 20 + 80),
+            icon: Building2, 
+            metric: s.budget || 'Custom', 
+            metricLabel: 'Budget',
+            image: mockResults[0].items[i % mockResults[0].items.length].image
+          }));
+          setPipelineResults(prev => ({
+            ...prev,
+            0: {
+              ...prev[0],
+              items: sponsorItems
+            }
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching init_and_sponsor:', err);
+      }
+    }
+
+    setTimeout(() => setShowResults(true), 1500); // Wait simulated time
   };
 
   const completeAgent = () => {
@@ -373,7 +413,7 @@ export default function WorkflowSection({ isActive, eventData }) {
   };
 
   const active = agentDefs[currentAgent];
-  const results = mockResults[currentAgent];
+  const results = pipelineResults[currentAgent];
   const allDone = completedAgents.length === agentDefs.length;
 
   // Fully expansive dark section
@@ -513,7 +553,10 @@ export default function WorkflowSection({ isActive, eventData }) {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className="btn-sci-fi clip-button"
-                      onClick={() => setShowActionModal(true)}
+                      onClick={() => {
+                        console.log('Backend Agent Response:', apiResponseData);
+                        setShowActionModal(true);
+                      }}
                     >
                       ENGAGE TARGETS ({selectedItems.length})
                     </motion.button>

@@ -3,6 +3,9 @@ import uuid
 # from flask_cors import CORS # Uncomment if you need cross-origin
 from agents.orchestrator_agent import OrchestratorAgent
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
 # CORS(app) # Enable CORS for frontend clients
 

@@ -2,3 +2,5 @@
 */.env.example
 backend/data/.env
 backend/$AV_ASW/instagram_agent/.env
+node_modules/*
+.next/*

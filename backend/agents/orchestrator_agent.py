@@ -6,22 +6,12 @@ from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 try:
-    from agents import email_bot
+    from agents.email_bot_agent import email_bot
 except ImportError:
-    try:
-        import email_bot
-    except ImportError:
-        email_bot = None
+    email_bot = None
 
 # Mocking the Supabase client
 from supabase import create_client, Client
-
-# Modifying sys.path to handle directories with spaces
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Akshat', 'Sponsor Agent'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Akshat', 'Pricing Agent', 'Pricing Agent'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '$AV_ASW', 'exhibitor'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '$AV_ASW', 'community agent'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '$AV_ASW', 'instagram_agent'))
 
 # Importing other agents based on workspace structure
 try:
@@ -35,26 +25,26 @@ except ImportError:
     PricingAgent = None
 
 try:
-    from agent import ExhibitorAgent
-    from models import RecommendationRequest
+    from agents.exhibitor_agent.agent import ExhibitorAgent
+    from agents.exhibitor_agent.models import RecommendationRequest
 except ImportError:
     ExhibitorAgent = None
     RecommendationRequest = None
 
 try:
-    from app.agents.community_agent.agent import recommend_communities
+    from agents.community_agent.agent import recommend_communities
 except ImportError:
     recommend_communities = None
 
 try:
-    from core.graph import run_pipeline as run_instagram_pipeline
-    from core.models import EventDetails as InstaEventDetails
+    from agents.instagram_agent.core.graph import run_pipeline as run_instagram_pipeline
+    from agents.instagram_agent.core.models import EventDetails as InstaEventDetails
 except ImportError:
     run_instagram_pipeline = None
     InstaEventDetails = None
 
-from rishi.srishti.src.artist_agent.agent import ArtistAgent
-from rishi.srishti.src.venue_agent.agent import VenueAgent
+from agents.artist_agent.agent import ArtistAgent
+from agents.venue_agent.agent import VenueAgent
 from agents.calling_agent import TwilioAgent
 from tools.search_tool import search
 
