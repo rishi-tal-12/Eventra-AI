@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
+from config import GEMINI_API_KEY
 
 try:
     from agents.email_bot_agent import email_bot
@@ -46,7 +47,7 @@ except ImportError:
 from agents.artist_agent.agent import ArtistAgent
 from agents.venue_agent.agent import VenueAgent
 from agents.calling_agent import TwilioAgent
-from tools.search_tool import search
+from tools.search_tool import web_search
 
 # Using LLM for extraction
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -61,7 +62,11 @@ class ExtractedInfo(BaseModel):
 
 class OrchestratorAgent:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        self.llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            google_api_key=GEMINI_API_KEY,
+            temperature=0.7,
+        )
         
         # Central memory to store responses of previous agents
         self.memory: Dict[str, Any] = {}
@@ -89,11 +94,13 @@ class OrchestratorAgent:
             except Exception as e:
                 print(f"Failed to load exhibitor agent data: {e}")
 
-        self.calling_agent = TwilioAgent(
-            account_sid=os.environ.get("TWILIO_SID", "mock"),
-            auth_token=os.environ.get("TWILIO_TOKEN", "mock"), 
-            twilio_number="mock"
-        ) if hasattr(TwilioAgent, '__init__') else None
+        try:
+            from flask import current_app
+            self.calling_agent = TwilioAgent(
+                app=current_app
+            ) if hasattr(TwilioAgent, '__init__') else None
+        except Exception:
+            self.calling_agent = None
 
     def extract_parameters(self, prompt: str) -> ExtractedInfo:
         """Extract event parameters from the user prompt."""

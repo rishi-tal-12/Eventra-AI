@@ -20,7 +20,7 @@ import re
 from datetime import datetime, timedelta
 
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -29,6 +29,7 @@ from agents.instagram_agent.core.models import (
     EventDetails, PostType, ScheduledPost
 )
 
+from config import GEMINI_API_KEY
 
 # ─── Prompt ─────────────────────────────────────────────────────────────────
 
@@ -92,7 +93,11 @@ def strategy_agent(state: AgentState) -> AgentState:
     event: EventDetails = state["event"]
 
     #llm = ChatOpenAI(model="gpt-4o", temperature=0.4)
-    llm = ChatOllama(model="llama3.2", temperature=0.4)
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash", 
+        temperature=0.4,
+        google_api_key=GEMINI_API_KEY,
+    )
     chain = STRATEGY_PROMPT | llm | StrOutputParser()
 
     raw = chain.invoke({"event_json": event.model_dump_json(indent=2)})

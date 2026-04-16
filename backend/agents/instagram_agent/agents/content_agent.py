@@ -20,11 +20,13 @@ import re
 from typing import Optional
 
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from agents.instagram_agent.core.models import AgentState, ContentTheme, PostType, ScheduledPost
+
+from config import GEMINI_API_KEY
 
 
 # ─── Theme-specific system prompts ─────────────────────────────────────────
@@ -103,7 +105,11 @@ def content_agent(state: AgentState) -> AgentState:
     persona = THEME_PERSONAS.get(post.theme, THEME_PERSONAS[ContentTheme.HYPE])
 
     #llm   = ChatOpenAI(model="gpt-4o", temperature=0.75)
-    llm = ChatOllama(model="llama3.2", temperature=0.75)
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash", 
+        temperature=0.75,
+        google_api_key=GEMINI_API_KEY,
+    )
     chain = CONTENT_PROMPT | llm | StrOutputParser()
 
     raw = chain.invoke({

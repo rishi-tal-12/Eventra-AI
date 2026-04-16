@@ -9,7 +9,7 @@
 #   4. Refine with LLM — generate strategies, posts, Discord messages
 #   5. Validate & return structured output (Pydantic)
 #
-# LLM backend: Ollama (open-source, local) via LangChain's ChatOllama.
+# LLM backend: Google Gemini.
 # Fallback model config is in the environment / .env file.
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -20,9 +20,8 @@ from typing import Optional
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
-# LangChain — Ollama (open-source, runs locally via Ollama server)
-# Install: https://ollama.com  |  Run: ollama pull mistral or llama3
-from langchain_community.chat_models import ChatOllama
+# LangChain — Google Gemini
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from .prompts import (
@@ -42,19 +41,14 @@ from .utils import (
     serialize_for_prompt,
 )
 
+from config import GEMINI_API_KEY
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Default Ollama model — change to any model you have pulled locally.
-# Recommended options:
-#   "mistral"        → fast, good instruction following (~4GB)
-#   "llama3"         → best quality (~8GB)
-#   "llama3:8b-instruct-q4_0" → quantized, faster
-#   "mixtral"        → highest quality (~26GB, needs strong GPU)
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "mistral")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
 
 # How many communities to fetch per category
 TOP_SUBREDDITS = int(os.getenv("TOP_SUBREDDITS", "5"))
@@ -114,20 +108,16 @@ class CommunityAgentOutput(BaseModel):
 # LLM Client Factory
 # ─────────────────────────────────────────────────────────────────────────────
 
-def get_llm() -> ChatOllama:
+def get_llm() -> ChatGoogleGenerativeAI:
     """
-    Returns a configured ChatOllama instance.
-    ChatOllama connects to a locally running Ollama server.
-    Make sure Ollama is running: `ollama serve`
-    And the model is pulled: `ollama pull mistral`
+    Returns a configured ChatGoogleGenerativeAI instance.
     """
-    logger.info(f"Initializing LLM: model={OLLAMA_MODEL} base_url={OLLAMA_BASE_URL}")
-    return ChatOllama(
-        model=OLLAMA_MODEL,
-        base_url=OLLAMA_BASE_URL,
-        temperature=0.7,      # slightly creative but stable
-        format="json",        # enforce JSON output mode (Ollama feature)
-        num_predict=2048,     # max tokens per response
+    logger.info(f"Initializing LLM: model={GEMINI_MODEL}")
+    return ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0.7,
+        google_api_key=GEMINI_API_KEY,
+        
     )
 
 
@@ -135,7 +125,7 @@ def get_llm() -> ChatOllama:
 # Step 1 — Artist Intelligence Pre-Pass
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_artist_analysis(llm: ChatOllama, artist: str, genre: str, location: str) -> dict:
+def run_artist_analysis(llm: ChatGoogleGenerativeAI, artist: str, genre: str, location: str) -> dict:
     """
     Runs a lightweight LLM call to extract artist community intelligence.
     This enriches the tag-matching step with artist-specific subreddit knowledge.
@@ -172,7 +162,7 @@ def run_artist_analysis(llm: ChatOllama, artist: str, genre: str, location: str)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_reddit_refinement(
-    llm: ChatOllama,
+    llm: ChatGoogleGenerativeAI,
     input_data: CommunityAgentInput,
     candidate_subreddits: list[dict],
 ) -> list[SubredditRecommendation]:
@@ -261,7 +251,7 @@ def _fallback_reddit(candidates: list[dict]) -> list[SubredditRecommendation]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_discord_refinement(
-    llm: ChatOllama,
+    llm: ChatGoogleGenerativeAI,
     input_data: CommunityAgentInput,
     candidate_archetypes: list[dict],
 ) -> list[DiscordRecommendation]:

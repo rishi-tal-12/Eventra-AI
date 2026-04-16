@@ -4,19 +4,16 @@
 # Requires Python 3.10+
 #
 # LLM Backend: Ollama (open-source, runs locally)
-#   Install:  https://ollama.com
-#   Start:    ollama serve
-#   Models:   ollama pull mistral        (recommended, fast)
-#             ollama pull llama3         (higher quality)
-#             ollama pull mixtral        (best quality, needs GPU)
+#   Install:  https://langchain-google-genai.com
+#   Start:    langchain-google-genai serve
+#   Models:   langchain-google-genai pull mistral        (recommended, fast)
+#             langchain-google-genai pull llama3         (higher quality)
+#             langchain-google-genai pull mixtral        (best quality, needs GPU)
 
 # ── LangChain ────────────────────────────────────────────────────
 langchain>=0.2.0
-langchain-community>=0.2.0
+langchain-google-genai
 langchain-core>=0.2.0
-
-# ── Ollama client (open-source LLM backend) ──────────────────────
-ollama>=0.2.0
 
 # ── Data validation ──────────────────────────────────────────────
 pydantic>=2.6.0

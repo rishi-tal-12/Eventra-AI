@@ -36,9 +36,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # LLM — now using Ollama locally
-    OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str    = "llama3.2"
+    # LLM — now using Google Gemini
+    GOOGLE_API_KEY: str = ""
+    GEMINI_MODEL: str   = "gemini-1.5-pro"
 
     # Instagram (leave blank until you need it)
     IG_ACCESS_TOKEN: str        = ""
