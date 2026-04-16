@@ -1,0 +1,153 @@
+2026-04-16 12:45:12 | DEBUG | Genre 'bass music / electronic' → tags: {'edm', 'trance', 'dance', 'house', 'ambient', 'electronic', 'dnb', 'drum and bass', 'techno', 'bass', 'bass music / electronic', 'experimental'}
+2026-04-16 12:45:12 | DEBUG | Audience 'college students 18-28' → tags: {'college students', 'young adults', 'students', '18-24', 'campus community', 'college', 'college students 18-28'}
+2026-04-16 12:45:12 | DEBUG | Location 'Delhi' → tags: {'global indians', 'delhi', 'global', 'india', 'ncr'}
+2026-04-16 12:45:12 | DEBUG | Artist 'Nucleya' → tags: {'emerging', 'dj', 'electronic artist', 'all', 'producer', 'all artists', 'nucleya'}
+2026-04-16 12:45:12 | DEBUG |   r/Music filtered out (composite=0.137)
+2026-04-16 12:45:12 | DEBUG |   r/hiphopheads filtered out (composite=0.08)
+2026-04-16 12:45:12 | DEBUG |   r/Metal filtered out (composite=0.08)
+2026-04-16 12:45:12 | DEBUG |   r/Jazz filtered out (composite=0.08)
+2026-04-16 12:45:12 | DEBUG |   r/punkrock filtered out (composite=0.123)
+2026-04-16 12:45:12 | DEBUG |   r/india filtered out (composite=0.12)
+2026-04-16 12:45:12 | DEBUG |   r/mumbai filtered out (composite=0.13)
+2026-04-16 12:45:12 | DEBUG |   r/bangalore filtered out (composite=0.13)
+2026-04-16 12:45:12 | DEBUG |   r/IndianHipHop filtered out (composite=0.12)
+2026-04-16 12:45:12 | DEBUG |   r/IndianClassicalMusic filtered out (composite=0.12)
+2026-04-16 12:45:12 | DEBUG |   r/Concerts filtered out (composite=0.137)
+2026-04-16 12:45:12 | DEBUG |   r/festivals filtered out (composite=0.134)
+2026-04-16 12:45:12 | INFO | Subreddit filter: 20 → 8 eligible → top 5 selected
+2026-04-16 12:45:12 | DEBUG |   r/EDM | composite=0.409 | promo=high
+2026-04-16 12:45:12 | DEBUG |   r/college | composite=0.362 | promo=medium
+2026-04-16 12:45:12 | DEBUG |   r/delhi | composite=0.339 | promo=high
+2026-04-16 12:45:12 | DEBUG |   r/IndieHeads | composite=0.251 | promo=medium
+2026-04-16 12:45:12 | DEBUG |   r/WeAreTheMusicMakers | composite=0.241 | promo=medium
+2026-04-16 12:45:12 | INFO | Discord filter: 10 → 7 eligible → top 3 selected
+2026-04-16 12:46:15 | DEBUG | Genre 'bass music / electronic' → tags: {'edm', 'dance', 'techno', 'dnb', 'experimental', 'bass', 'ambient', 'trance', 'house', 'electronic', 'bass music / electronic', 'drum and bass'}
+2026-04-16 12:46:15 | DEBUG | Audience 'college students 18-28' → tags: {'18-24', 'college', 'campus community', 'college students 18-28', 'students', 'young adults', 'college students'}
+2026-04-16 12:46:15 | DEBUG | Location 'Delhi' → tags: {'global indians', 'india', 'ncr', 'global', 'delhi'}
+2026-04-16 12:46:15 | DEBUG | Artist 'Nucleya' → tags: {'electronic artist', 'producer', 'all artists', 'nucleya', 'emerging', 'dj', 'all'}
+2026-04-16 12:46:15 | DEBUG |   r/Music filtered out (composite=0.137)
+2026-04-16 12:46:15 | DEBUG |   r/hiphopheads filtered out (composite=0.08)
+2026-04-16 12:46:15 | DEBUG |   r/Metal filtered out (composite=0.08)
+2026-04-16 12:46:15 | DEBUG |   r/Jazz filtered out (composite=0.08)
+2026-04-16 12:46:15 | DEBUG |   r/punkrock filtered out (composite=0.123)
+2026-04-16 12:46:15 | DEBUG |   r/india filtered out (composite=0.12)
+2026-04-16 12:46:15 | DEBUG |   r/mumbai filtered out (composite=0.13)
+2026-04-16 12:46:15 | DEBUG |   r/bangalore filtered out (composite=0.13)
+2026-04-16 12:46:15 | DEBUG |   r/IndianHipHop filtered out (composite=0.12)
+2026-04-16 12:46:15 | DEBUG |   r/IndianClassicalMusic filtered out (composite=0.12)
+2026-04-16 12:46:15 | DEBUG |   r/Concerts filtered out (composite=0.137)
+2026-04-16 12:46:15 | DEBUG |   r/festivals filtered out (composite=0.134)
+2026-04-16 12:46:15 | INFO | Subreddit filter: 20 → 8 eligible → top 5 selected
+2026-04-16 12:46:15 | DEBUG |   r/EDM | composite=0.409 | promo=high
+2026-04-16 12:46:15 | DEBUG |   r/college | composite=0.362 | promo=medium
+2026-04-16 12:46:15 | DEBUG |   r/delhi | composite=0.339 | promo=high
+2026-04-16 12:46:15 | DEBUG |   r/IndieHeads | composite=0.251 | promo=medium
+2026-04-16 12:46:15 | DEBUG |   r/WeAreTheMusicMakers | composite=0.241 | promo=medium
+2026-04-16 12:46:15 | INFO | Discord filter: 10 → 7 eligible → top 3 selected
+2026-04-16 12:46:53 | INFO | Running test: Nucleya — Bass Music, Delhi
+2026-04-16 12:46:53 | INFO | ============================================================
+2026-04-16 12:46:53 | INFO | Community Recommendation Agent — START
+2026-04-16 12:46:53 | INFO | ============================================================
+2026-04-16 12:46:53 | INFO | Input validated: artist=Nucleya | location=Delhi
+2026-04-16 12:46:53 | INFO | Initializing LLM: model=mistral base_url=http://localhost:11434
+2026-04-16 12:46:53 | INFO | Running artist analysis for: Nucleya
+2026-04-16 12:46:55 | WARNING | Artist analysis failed (non-fatal): Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:46:55 | DEBUG | Genre 'Bass music / Electronic / Desi bass' → tags: {'ambient', 'dance', 'electronic', 'dnb', 'indian', 'techno', 'bhangra', 'bass music / electronic / desi bass', 'edm', 'drum and bass', 'trance', 'desi', 'bollywood', 'experimental', 'bass', 'house'}
+2026-04-16 12:46:55 | DEBUG | Audience 'College students and young adults, 18-28' → tags: {'college students and young adults, 18-28', '18-24', 'college', 'students', 'young adults', 'campus community', '20-35', '18-35', 'college students'}
+2026-04-16 12:46:55 | DEBUG | Location 'Delhi' → tags: {'delhi', 'global indians', 'ncr', 'global', 'india'}
+2026-04-16 12:46:55 | DEBUG | Artist 'Nucleya' → tags: {'electronic artist', 'bollywood artist', 'all', 'desi artist', 'dj', 'all artists', 'emerging', 'nucleya', 'indian musician', 'producer'}
+2026-04-16 12:46:55 | INFO | Tags expanded | genre=16 | audience=9 | location=5 | artist=10
+2026-04-16 12:46:55 | DEBUG |   r/Music filtered out (composite=0.12)
+2026-04-16 12:46:55 | DEBUG |   r/hiphopheads filtered out (composite=0.113)
+2026-04-16 12:46:55 | DEBUG |   r/Metal filtered out (composite=0.08)
+2026-04-16 12:46:55 | DEBUG |   r/Jazz filtered out (composite=0.08)
+2026-04-16 12:46:55 | DEBUG |   r/punkrock filtered out (composite=0.147)
+2026-04-16 12:46:55 | DEBUG |   r/IndianHipHop filtered out (composite=0.139)
+2026-04-16 12:46:55 | DEBUG |   r/IndianClassicalMusic filtered out (composite=0.12)
+2026-04-16 12:46:55 | DEBUG |   r/Concerts filtered out (composite=0.12)
+2026-04-16 12:46:55 | DEBUG |   r/nightlife filtered out (composite=0.138)
+2026-04-16 12:46:55 | INFO | Subreddit filter: 20 → 11 eligible → top 5 selected
+2026-04-16 12:46:55 | DEBUG |   r/delhi | composite=0.37 | promo=high
+2026-04-16 12:46:55 | DEBUG |   r/EDM | composite=0.357 | promo=high
+2026-04-16 12:46:55 | DEBUG |   r/college | composite=0.299 | promo=medium
+2026-04-16 12:46:55 | DEBUG |   r/india | composite=0.255 | promo=low
+2026-04-16 12:46:55 | DEBUG |   r/IndieHeads | composite=0.247 | promo=medium
+2026-04-16 12:46:55 | INFO | Discord filter: 10 → 7 eligible → top 4 selected
+2026-04-16 12:46:55 | INFO | Refining 5 subreddits with LLM...
+2026-04-16 12:46:57 | ERROR | Reddit refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:46:57 | INFO | Refining 4 Discord archetypes with LLM...
+2026-04-16 12:46:59 | ERROR | Discord refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:46:59 | INFO | Agent complete | reddit=5 | discord=4
+2026-04-16 12:46:59 | INFO | ============================================================
+2026-04-16 12:46:59 | INFO | Running test: Arijit Singh — Bollywood, Mumbai
+2026-04-16 12:46:59 | INFO | ============================================================
+2026-04-16 12:46:59 | INFO | Community Recommendation Agent — START
+2026-04-16 12:46:59 | INFO | ============================================================
+2026-04-16 12:46:59 | INFO | Input validated: artist=Arijit Singh | location=Mumbai
+2026-04-16 12:46:59 | INFO | Initializing LLM: model=mistral base_url=http://localhost:11434
+2026-04-16 12:46:59 | INFO | Running artist analysis for: Arijit Singh
+2026-04-16 12:47:01 | WARNING | Artist analysis failed (non-fatal): Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:01 | DEBUG | Genre 'Bollywood / Hindi film music / romantic' → tags: {'indian', 'bhangra', 'desi', 'bollywood', 'bollywood / hindi film music / romantic'}
+2026-04-16 12:47:01 | DEBUG | Audience 'Bollywood fans, 20-45, families and couples' → tags: {'bollywood fans, 20-45, families and couples'}
+2026-04-16 12:47:01 | DEBUG | Location 'Mumbai' → tags: {'global indians', 'india', 'global', 'mumbai'}
+2026-04-16 12:47:01 | DEBUG | Artist 'Arijit Singh' → tags: {'bollywood artist', 'arijit', 'all', 'desi artist', 'all artists', 'emerging', 'indian musician', 'singh'}
+2026-04-16 12:47:01 | INFO | Tags expanded | genre=5 | audience=1 | location=4 | artist=8
+2026-04-16 12:47:01 | DEBUG |   r/listentothis filtered out (composite=0.125)
+2026-04-16 12:47:01 | DEBUG |   r/WeAreTheMusicMakers filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/EDM filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/aves filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/hiphopheads filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/IndieHeads filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/Metal filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/Jazz filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/punkrock filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/bangalore filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/festivals filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/nightlife filtered out (composite=0.1)
+2026-04-16 12:47:01 | DEBUG |   r/college filtered out (composite=0.1)
+2026-04-16 12:47:01 | INFO | Subreddit filter: 20 → 7 eligible → top 5 selected
+2026-04-16 12:47:01 | DEBUG |   r/india | composite=0.465 | promo=low
+2026-04-16 12:47:01 | DEBUG |   r/mumbai | composite=0.38 | promo=high
+2026-04-16 12:47:01 | DEBUG |   r/delhi | composite=0.245 | promo=high
+2026-04-16 12:47:01 | DEBUG |   r/IndianHipHop | composite=0.21 | promo=high
+2026-04-16 12:47:01 | DEBUG |   r/Music | composite=0.15 | promo=low
+2026-04-16 12:47:01 | INFO | Discord filter: 10 → 6 eligible → top 4 selected
+2026-04-16 12:47:01 | INFO | Refining 5 subreddits with LLM...
+2026-04-16 12:47:03 | ERROR | Reddit refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:03 | INFO | Refining 4 Discord archetypes with LLM...
+2026-04-16 12:47:05 | ERROR | Discord refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:05 | INFO | Agent complete | reddit=5 | discord=4
+2026-04-16 12:47:05 | INFO | ============================================================
+2026-04-16 12:47:05 | INFO | Running test: Unknown Indie Band — Indie Rock, Bangalore
+2026-04-16 12:47:05 | INFO | ============================================================
+2026-04-16 12:47:05 | INFO | Community Recommendation Agent — START
+2026-04-16 12:47:05 | INFO | ============================================================
+2026-04-16 12:47:05 | INFO | Input validated: artist=The Local Train | location=Bangalore
+2026-04-16 12:47:05 | INFO | Initializing LLM: model=mistral base_url=http://localhost:11434
+2026-04-16 12:47:05 | INFO | Running artist analysis for: The Local Train
+2026-04-16 12:47:08 | WARNING | Artist analysis failed (non-fatal): Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:08 | DEBUG | Genre 'Indie rock / alternative' → tags: {'indie rock / alternative', 'alternative', 'rock', 'indie pop', 'indie'}
+2026-04-16 12:47:08 | DEBUG | Audience 'Indie music fans, young professionals, 22-35' → tags: {'music fans', 'music lovers', 'enthusiasts', 'urban adults', '25-40', 'indie music fans, young professionals, 22-35', 'young professionals', 'professionals', 'music nerds'}
+2026-04-16 12:47:08 | DEBUG | Location 'Bangalore' → tags: {'global indians', 'india', 'bangalore', 'global'}
+2026-04-16 12:47:08 | DEBUG | Artist 'The Local Train' → tags: {'indie artist', 'all', 'all artists', 'local', 'the', 'train', 'emerging', 'singer-songwriter'}
+2026-04-16 12:47:08 | INFO | Tags expanded | genre=5 | audience=9 | location=4 | artist=8
+2026-04-16 12:47:08 | DEBUG |   r/WeAreTheMusicMakers filtered out (composite=0.1)
+2026-04-16 12:47:08 | DEBUG |   r/EDM filtered out (composite=0.1)
+2026-04-16 12:47:08 | DEBUG |   r/aves filtered out (composite=0.1)
+2026-04-16 12:47:08 | DEBUG |   r/hiphopheads filtered out (composite=0.1)
+2026-04-16 12:47:08 | DEBUG |   r/Metal filtered out (composite=0.1)
+2026-04-16 12:47:08 | DEBUG |   r/Jazz filtered out (composite=0.133)
+2026-04-16 12:47:08 | DEBUG |   r/nightlife filtered out (composite=0.133)
+2026-04-16 12:47:08 | INFO | Subreddit filter: 20 → 13 eligible → top 5 selected
+2026-04-16 12:47:08 | DEBUG |   r/IndieHeads | composite=0.483 | promo=medium
+2026-04-16 12:47:08 | DEBUG |   r/listentothis | composite=0.423 | promo=medium
+2026-04-16 12:47:08 | DEBUG |   r/bangalore | composite=0.355 | promo=high
+2026-04-16 12:47:08 | DEBUG |   r/festivals | composite=0.34 | promo=high
+2026-04-16 12:47:08 | DEBUG |   r/delhi | composite=0.225 | promo=high
+2026-04-16 12:47:08 | INFO | Discord filter: 10 → 6 eligible → top 4 selected
+2026-04-16 12:47:08 | INFO | Refining 5 subreddits with LLM...
+2026-04-16 12:47:10 | ERROR | Reddit refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:10 | INFO | Refining 4 Discord archetypes with LLM...
+2026-04-16 12:47:12 | ERROR | Discord refinement LLM call failed: Ollama call failed with status code 404. Maybe your model is not found and you should pull the model with `ollama pull mistral`.
+2026-04-16 12:47:12 | INFO | Agent complete | reddit=5 | discord=4
+2026-04-16 12:47:12 | INFO | ============================================================

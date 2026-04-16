@@ -1,0 +1,28 @@
+# Community Recommendation Agent — Dependencies
+# Install: pip install -r requirements.txt
+#
+# Requires Python 3.10+
+#
+# LLM Backend: Ollama (open-source, runs locally)
+#   Install:  https://ollama.com
+#   Start:    ollama serve
+#   Models:   ollama pull mistral        (recommended, fast)
+#             ollama pull llama3         (higher quality)
+#             ollama pull mixtral        (best quality, needs GPU)
+
+# ── LangChain ────────────────────────────────────────────────────
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-core>=0.2.0
+
+# ── Ollama client (open-source LLM backend) ──────────────────────
+ollama>=0.2.0
+
+# ── Data validation ──────────────────────────────────────────────
+pydantic>=2.6.0
+
+# ── Logging ──────────────────────────────────────────────────────
+loguru>=0.7.0
+
+# ── Dev / Testing (optional) ─────────────────────────────────────
+python-dotenv>=1.0.0   # for .env file support

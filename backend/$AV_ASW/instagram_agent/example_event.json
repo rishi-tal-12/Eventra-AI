@@ -1,0 +1,14 @@
+{
+  "name": "Neon Beats Festival",
+  "date": "2025-03-15T19:00:00",
+  "venue": "IIT Roorkee Convocation Hall, Roorkee",
+  "artists": ["DJ KRVN", "The Local Roots", "Electra Wave", "FRQNCY"],
+  "genres": ["electronic", "indie", "hip-hop", "ambient"],
+  "target_audience": "college students aged 18-24, music lovers, IIT and nearby college crowd",
+  "vibe": "electric, euphoric, underground yet polished — the kind of night you tell stories about",
+  "ticket_url": "https://linktr.ee/neonbeatsiitr",
+  "ticket_price": "₹299 (early bird) / ₹499 at door",
+  "capacity": 800,
+  "instagram_handle": "@neonbeats.iitr",
+  "location_hashtags": ["#Roorkee", "#IITRoorkee", "#Uttarakhand", "#RoorkeeNightlife", "#IITRfest"]
+}
