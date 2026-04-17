@@ -244,15 +244,192 @@ function ResultCard({ item, selected, onSelect }) {
   );
 }
 
-function ActionModal({ isOpen, onClose, count, agentName }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers: extract contact info + build objective
+// ─────────────────────────────────────────────────────────────────────────────
+
+const BACKUP_PHONE = '+919810706119';
+const BACKUP_EMAIL = 'contact.sid.chopra@gmail.com';
+
+/** Map agent index → the /api/select/* endpoint field names */
+const SELECTION_ENDPOINTS = {
+  0: { path: '/api/select/sponsors',   bodyKey: 'selected_sponsors' },
+  1: { path: '/api/select/speakers',   bodyKey: 'selected_speakers' },
+  2: { path: '/api/select/exhibitors', bodyKey: 'selected_exhibitors' },
+  3: { path: '/api/select/venue',      bodyKey: 'selected_venue' },
+};
+
+/** Try to pull an email from an item object */
+function extractEmail(item) {
+  if (!item) return null;
+  for (const key of ['email', 'contact_email', 'Email', 'e_mail']) {
+    if (item[key] && typeof item[key] === 'string' && item[key].includes('@')) return item[key];
+  }
+  return null;
+}
+
+/** Try to pull a phone number from an item object */
+function extractPhone(item) {
+  if (!item) return null;
+  for (const key of ['phone', 'mobile', 'phone_number', 'contact_phone', 'Phone', 'mobile_number']) {
+    if (item[key] && typeof item[key] === 'string') return item[key];
+  }
+  return null;
+}
+
+/** Agent-index → human-readable role label */
+const AGENT_ROLE_LABELS = {
+  0: 'sponsorship',
+  1: 'speaker / artist booking',
+  2: 'exhibitor participation',
+  3: 'venue booking',
+  4: 'pricing',
+  5: 'marketing & community',
+  6: 'scheduling',
+  7: 'financial planning',
+};
+
+/** Build a context-rich objective string for email / call from the frontend */
+function buildObjective(agentIndex, selectedItemObjects, eventData) {
+  const roleLabel = AGENT_ROLE_LABELS[agentIndex] || 'collaboration';
+  const names = selectedItemObjects.map(i => i.name).join(', ');
+
+  let eventContext = '';
+  if (eventData) {
+    eventContext = ` for a ${eventData.eventType || ''} event in ${eventData.city || ''} expecting ${eventData.attendees || ''} attendees`;
+  }
+
+  return `Reach out to ${names} regarding a ${roleLabel} opportunity${eventContext}. Introduce Eventra, express interest in partnership, and request availability and pricing details.`;
+}
+
+function ActionModal({ isOpen, onClose, count, agentName, selectedItemObjects, sessionId, currentAgent, eventData }) {
+  const [actionState, setActionState] = useState('idle'); // idle | submitting | emailing | calling | done | error
+  const [statusMsg, setStatusMsg] = useState('');
+
   if (!isOpen) return null;
+
+  // ── submit selections to backend ──────────────────────────────────────
+  const submitSelections = async () => {
+    const endpoint = SELECTION_ENDPOINTS[currentAgent];
+    if (!endpoint || !sessionId) return true; // nothing to submit, treat as ok
+    try {
+      const res = await fetch(`http://localhost:5000${endpoint.path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          [endpoint.bodyKey]: selectedItemObjects,
+        }),
+      });
+      if (!res.ok) throw new Error(`Selection API returned ${res.status}`);
+      return true;
+    } catch (err) {
+      console.error('Failed to submit selections:', err);
+      return false;
+    }
+  };
+
+  // ── email handler ─────────────────────────────────────────────────────
+  const handleEmail = async () => {
+    setActionState('submitting');
+    setStatusMsg('Submitting selections…');
+
+    const ok = await submitSelections();
+    if (!ok) {
+      setActionState('error');
+      setStatusMsg('Failed to submit selections. Please retry.');
+      return;
+    }
+
+    setActionState('emailing');
+    setStatusMsg('Transmitting proposals…');
+
+    const objective = buildObjective(currentAgent, selectedItemObjects, eventData);
+    let successCount = 0;
+
+    for (const item of selectedItemObjects) {
+      const recipientEmail = extractEmail(item) || BACKUP_EMAIL;
+      try {
+        const res = await fetch('http://localhost:5000/api/email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            recipient_email: recipientEmail,
+            objective,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.status !== 'failure') {
+          successCount++;
+          console.log(`Email sent to ${recipientEmail} for ${item.name}`, data);
+        } else {
+          console.warn(`Email failed for ${item.name}:`, data);
+        }
+      } catch (err) {
+        console.error(`Email error for ${item.name}:`, err);
+      }
+    }
+
+    setActionState('done');
+    setStatusMsg(`${successCount}/${selectedItemObjects.length} proposals transmitted successfully.`);
+  };
+
+  // ── call handler ──────────────────────────────────────────────────────
+  const handleCall = async () => {
+    setActionState('submitting');
+    setStatusMsg('Submitting selections…');
+
+    const ok = await submitSelections();
+    if (!ok) {
+      setActionState('error');
+      setStatusMsg('Failed to submit selections. Please retry.');
+      return;
+    }
+
+    setActionState('calling');
+    setStatusMsg('Establishing commlinks…');
+
+    const objective = buildObjective(currentAgent, selectedItemObjects, eventData);
+    let successCount = 0;
+
+    for (const item of selectedItemObjects) {
+      const phoneNumber = extractPhone(item) || BACKUP_PHONE;
+      try {
+        const res = await fetch('http://localhost:5000/api/call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            phone_number: phoneNumber,
+            input_string: objective,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && !data.error) {
+          successCount++;
+          console.log(`Call initiated to ${phoneNumber} for ${item.name}`, data);
+        } else {
+          console.warn(`Call failed for ${item.name}:`, data);
+        }
+      } catch (err) {
+        console.error(`Call error for ${item.name}:`, err);
+      }
+    }
+
+    setActionState('done');
+    setStatusMsg(`${successCount}/${selectedItemObjects.length} commlinks established.`);
+  };
+
+  const isBusy = ['submitting', 'emailing', 'calling'].includes(actionState);
+
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={isBusy ? undefined : onClose}
         style={{
           position: 'fixed',
           inset: 0,
@@ -284,12 +461,14 @@ function ActionModal({ isOpen, onClose, count, agentName }) {
           }}
         >
           <button
-            onClick={onClose}
+            onClick={isBusy ? undefined : onClose}
+            disabled={isBusy}
             style={{
               position: 'absolute', top: '20px', right: '20px',
               background: 'rgba(0,240,255,0.1)', border: '1px solid var(--accent-cyan)', color: 'var(--accent-cyan)',
-              cursor: 'pointer', width: '32px', height: '32px', borderRadius: '4px',
+              cursor: isBusy ? 'not-allowed' : 'pointer', width: '32px', height: '32px', borderRadius: '4px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              opacity: isBusy ? 0.4 : 1,
             }}
           >
             <X size={16} />
@@ -305,27 +484,92 @@ function ActionModal({ isOpen, onClose, count, agentName }) {
             Initiating connection protocol for selected {agentName.toLowerCase()} matches.
           </p>
 
+          {/* Status Banner */}
+          {actionState !== 'idle' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              style={{
+                marginBottom: '20px',
+                padding: '14px 18px',
+                borderRadius: '8px',
+                background: actionState === 'error'
+                  ? 'rgba(255,60,60,0.12)'
+                  : actionState === 'done'
+                    ? 'rgba(0,240,255,0.1)'
+                    : 'rgba(255,200,0,0.08)',
+                border: `1px solid ${actionState === 'error' ? 'rgba(255,60,60,0.4)' : actionState === 'done' ? 'var(--accent-cyan)' : 'rgba(255,200,0,0.3)'}`,
+                fontSize: '13px',
+                fontFamily: 'var(--font-main)',
+                color: actionState === 'error' ? '#ff5e5e' : actionState === 'done' ? 'var(--accent-cyan)' : 'rgba(255,220,100,0.9)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              {isBusy && (
+                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                  <Loader2 size={16} />
+                </motion.div>
+              )}
+              {actionState === 'done' && <CheckCircle2 size={16} />}
+              {statusMsg}
+            </motion.div>
+          )}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              { icon: Mail, label: 'TRANSMIT PROPOSAL (EMAIL)' },
-              { icon: Phone, label: 'ESTABLISH COMMLINK (CALL)' },
-              { icon: ExternalLink, label: 'GENERATE DOSSIER (PDF)' },
-            ].map(({ icon: I, label }) => (
-              <motion.button
-                key={label}
-                whileHover={{ scale: 1.02, x: 8 }}
-                whileTap={{ scale: 0.98 }}
-                className="btn-sci-fi-filled clip-button"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '16px',
-                  padding: '16px 24px', width: '100%', textAlign: 'left',
-                }}
-              >
-                <I size={18} />
-                {label}
-                <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
-              </motion.button>
-            ))}
+            <motion.button
+              whileHover={isBusy ? {} : { scale: 1.02, x: 8 }}
+              whileTap={isBusy ? {} : { scale: 0.98 }}
+              className="btn-sci-fi-filled clip-button"
+              disabled={isBusy}
+              onClick={handleEmail}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '16px',
+                padding: '16px 24px', width: '100%', textAlign: 'left',
+                opacity: isBusy ? 0.5 : 1,
+                cursor: isBusy ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <Mail size={18} />
+              TRANSMIT PROPOSAL (EMAIL)
+              <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+            </motion.button>
+
+            <motion.button
+              whileHover={isBusy ? {} : { scale: 1.02, x: 8 }}
+              whileTap={isBusy ? {} : { scale: 0.98 }}
+              className="btn-sci-fi-filled clip-button"
+              disabled={isBusy}
+              onClick={handleCall}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '16px',
+                padding: '16px 24px', width: '100%', textAlign: 'left',
+                opacity: isBusy ? 0.5 : 1,
+                cursor: isBusy ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <Phone size={18} />
+              ESTABLISH COMMLINK (CALL)
+              <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+            </motion.button>
+
+            <motion.button
+              whileHover={isBusy ? {} : { scale: 1.02, x: 8 }}
+              whileTap={isBusy ? {} : { scale: 0.98 }}
+              className="btn-sci-fi-filled clip-button"
+              disabled={isBusy}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '16px',
+                padding: '16px 24px', width: '100%', textAlign: 'left',
+                opacity: isBusy ? 0.5 : 1,
+                cursor: isBusy ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <ExternalLink size={18} />
+              GENERATE DOSSIER (PDF)
+              <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>
@@ -446,7 +690,25 @@ export default function WorkflowSection({ isActive, eventData }) {
     setTimeout(() => setShowResults(true), 1500); // Wait simulated time
   };
 
-  const completeAgent = () => {
+  const completeAgent = async () => {
+    // Submit selections to backend before advancing
+    const endpoint = SELECTION_ENDPOINTS[currentAgent];
+    if (endpoint && sessionId && selectedItems.length > 0) {
+      const selectedObjs = results?.items?.filter(item => selectedItems.includes(item.name)) || [];
+      try {
+        await fetch(`http://localhost:5000${endpoint.path}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            [endpoint.bodyKey]: selectedObjs,
+          }),
+        });
+      } catch (err) {
+        console.warn('Selection submission failed (non-blocking):', err);
+      }
+    }
+
     setCompletedAgents(prev => [...prev, currentAgent]);
     setShowResults(false);
     if (currentAgent < agentDefs.length - 1) {
@@ -657,6 +919,12 @@ export default function WorkflowSection({ isActive, eventData }) {
         onClose={() => setShowActionModal(false)}
         count={selectedItems.length}
         agentName={active?.name || ''}
+        selectedItemObjects={
+          results?.items?.filter(item => selectedItems.includes(item.name)) || []
+        }
+        sessionId={sessionId}
+        currentAgent={currentAgent}
+        eventData={eventData}
       />
     </section>
   );

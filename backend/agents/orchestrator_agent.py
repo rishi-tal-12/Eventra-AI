@@ -9,8 +9,10 @@ from config import GROQ_API_KEY
 
 try:
     from agents.email_bot_agent.email_bot import send_greeting_email as email_bot
+    from agents.email_bot_agent.email_bot import send_email as email_send
 except ImportError:
     email_bot = None
+    email_send = None
 
 # Mocking the Supabase client
 from supabase import create_client, Client
@@ -403,6 +405,67 @@ class OrchestratorAgent:
             print(f"Call initiated to {phone}")
         except Exception as e:
             print(f"Failed to initiate call to {phone}: {e}")
+
+    def send_objective_email(self, recipient_email: str, objective: str) -> Dict[str, Any]:
+        """
+        Send an email whose subject and body are auto-generated from a free-form objective.
+
+        The LLM produces a professional subject line and email body based on
+        the objective, then delegates to the email bot's send_email function.
+
+        Args:
+            recipient_email: The target email address.
+            objective: Free-form description of what the email should convey.
+                e.g. "Invite the sponsor to our tech conference on July 20
+                and outline Gold-tier benefits."
+
+        Returns:
+            A dict with status, email_content, and any error.
+        """
+        if not email_send:
+            return {
+                "status": "failure",
+                "email_content": {},
+                "error": "Email bot is not available (import failed).",
+            }
+
+        # Use the LLM to draft subject + body
+        derivation_prompt = f"""You are a professional email copywriter for Eventra, an AI-powered event management platform.
+
+Given the user's objective, write a polished email with TWO parts:
+
+1. **subject** — A clear, concise email subject line (under 10 words).
+2. **body** — A professional but warm email body (2-4 short paragraphs). Sign off as "The Eventra Team".
+
+Objective:
+\"\"\"
+{objective}
+\"\"\"
+
+Respond in valid JSON with exactly two keys: "subject" and "body".
+Do NOT include any other text outside the JSON object."""
+
+        try:
+            response = self.llm.invoke(derivation_prompt)
+            content = response.content if hasattr(response, 'content') else str(response)
+            parsed = json.loads(content)
+            subject = parsed.get("subject", "Message from Eventra")
+            body = parsed.get("body", objective)
+        except Exception as e:
+            print(f"LLM email derivation failed, falling back to raw objective: {e}")
+            subject = "Message from Eventra"
+            body = objective
+
+        print(f"Email subject: {subject}")
+        print(f"Email body preview: {body[:80]}...")
+
+        result = email_send(recipient_email, subject, body)
+        self.memory["last_email"] = {
+            "recipient_email": recipient_email,
+            "objective": objective,
+            **result,
+        }
+        return result
 
     def initiate_call(self, phone_number: str, input_string: str) -> Dict[str, Any]:
         """

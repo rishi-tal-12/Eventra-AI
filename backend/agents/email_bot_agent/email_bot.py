@@ -18,14 +18,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Hardcoded sender details (update with your info) ─────────────────────────
-SENDER_NAME = "Akshat"          # ← Replace with your name
-SENDER_EMAIL = "akshatgo1010@gmail.com"        # ← Replace with your email
+SENDER_NAME = "Eventra AI"          # ← Replace with your name
+SENDER_EMAIL = "biluman0707@gmail.com"        # ← Replace with your email
 
 # ── SMTP settings from environment ───────────────────────────────────────────
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", SENDER_EMAIL)
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "wpla rgag vtjt ewpo")
 
 # ── Email-address regex (RFC-5322 simplified) ────────────────────────────────
 _EMAIL_RE = re.compile(
@@ -65,17 +65,18 @@ def build_greeting_email(recipient_name: str, sender_name: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Core function
+# Core functions
 # ─────────────────────────────────────────────────────────────────────────────
 
-def send_greeting_email(recipient_name: str, recipient_email: str) -> dict:
+def send_email(recipient_email: str, subject: str, body: str) -> dict:
     """
-    Validate, build, and send a greeting email.
+    Send an email with any given subject and body.
 
     Parameters
     ----------
-    recipient_name  : str – Name of the recipient.
     recipient_email : str – Email address of the recipient.
+    subject         : str – Email subject / heading.
+    body            : str – Plain-text email body.
 
     Returns
     -------
@@ -85,13 +86,6 @@ def send_greeting_email(recipient_name: str, recipient_email: str) -> dict:
         error         – (only on failure) description of the issue
     """
     # ── 1. Input validation ──────────────────────────────────────────────
-    if not recipient_name or not isinstance(recipient_name, str):
-        return {
-            "status": "failure",
-            "email_content": {},
-            "error": "recipient_name must be a non-empty string.",
-        }
-
     if not validate_email(recipient_email):
         return {
             "status": "failure",
@@ -99,17 +93,30 @@ def send_greeting_email(recipient_name: str, recipient_email: str) -> dict:
             "error": f"Invalid email address: '{recipient_email}'.",
         }
 
-    # ── 2. Build email content ───────────────────────────────────────────
-    email_content = build_greeting_email(recipient_name, SENDER_NAME)
+    if not subject or not isinstance(subject, str):
+        return {
+            "status": "failure",
+            "email_content": {},
+            "error": "subject must be a non-empty string.",
+        }
 
-    # ── 3. Compose MIME message ──────────────────────────────────────────
+    if not body or not isinstance(body, str):
+        return {
+            "status": "failure",
+            "email_content": {},
+            "error": "body must be a non-empty string.",
+        }
+
+    email_content = {"subject": subject, "body": body}
+
+    # ── 2. Compose MIME message ──────────────────────────────────────────
     msg = MIMEMultipart()
     msg["From"] = f"{SENDER_NAME} <{SENDER_EMAIL}>"
-    msg["To"] = f"{recipient_name} <{recipient_email}>"
-    msg["Subject"] = email_content["subject"]
-    msg.attach(MIMEText(email_content["body"], "plain", "utf-8"))
+    msg["To"] = recipient_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain", "utf-8"))
 
-    # ── 4. Send via SMTP ─────────────────────────────────────────────────
+    # ── 3. Send via SMTP ─────────────────────────────────────────────────
     try:
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
             server.ehlo()
@@ -141,3 +148,30 @@ def send_greeting_email(recipient_name: str, recipient_email: str) -> dict:
             "email_content": email_content,
             "error": f"Network error: {exc}",
         }
+
+
+def send_greeting_email(recipient_name: str, recipient_email: str) -> dict:
+    """
+    Validate, build, and send a greeting email.
+
+    Parameters
+    ----------
+    recipient_name  : str – Name of the recipient.
+    recipient_email : str – Email address of the recipient.
+
+    Returns
+    -------
+    dict with keys:
+        status        – "success" | "failure"
+        email_content – {"subject": ..., "body": ...}
+        error         – (only on failure) description of the issue
+    """
+    if not recipient_name or not isinstance(recipient_name, str):
+        return {
+            "status": "failure",
+            "email_content": {},
+            "error": "recipient_name must be a non-empty string.",
+        }
+
+    email_content = build_greeting_email(recipient_name, SENDER_NAME)
+    return send_email(recipient_email, email_content["subject"], email_content["body"])

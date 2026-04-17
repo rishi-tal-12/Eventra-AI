@@ -92,7 +92,7 @@ def get_exhibitors():
         return jsonify({"error": "Invalid or missing session_id"}), 400
         
     orchestrator = orchestrator_sessions[session_id]
-    
+
     try:
         exhibitors = orchestrator.call_exhibitor_agent(memory=orchestrator.memory)
         return jsonify({"exhibitors": exhibitors}), 200
@@ -108,7 +108,7 @@ def get_venues():
         return jsonify({"error": "Invalid or missing session_id"}), 400
         
     orchestrator = orchestrator_sessions[session_id]
-    
+
     try:
         venues = orchestrator.call_venue_agent(memory=orchestrator.memory)
         return jsonify({"venues": venues}), 200
@@ -124,7 +124,7 @@ def get_pricing():
         return jsonify({"error": "Invalid or missing session_id"}), 400
         
     orchestrator = orchestrator_sessions[session_id]
-    
+
     try:
         pricing = orchestrator.call_pricing_agent(memory=orchestrator.memory)
         return jsonify({"pricing": pricing}), 200
@@ -146,6 +146,66 @@ def get_communities():
         return jsonify({"communities": communities}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Selection endpoints — persist the user's choices between steps
+# ─────────────────────────────────────────────────────────────────────────────
+
+@app.route('/api/select/sponsors', methods=['POST'])
+def set_selected_sponsors():
+    data = request.get_json()
+    session_id = data.get('session_id')
+    if not session_id or session_id not in orchestrator_sessions:
+        return jsonify({"error": "Invalid or missing session_id"}), 400
+    selected = data.get('selected_sponsors')
+    if selected is None:
+        return jsonify({"error": "'selected_sponsors' is required"}), 400
+    orchestrator = orchestrator_sessions[session_id]
+    orchestrator.selected_sponsors = selected
+    orchestrator.memory["selected_sponsors"] = selected
+    return jsonify({"status": "ok", "selected_sponsors": selected}), 200
+
+@app.route('/api/select/speakers', methods=['POST'])
+def set_selected_speakers():
+    data = request.get_json()
+    session_id = data.get('session_id')
+    if not session_id or session_id not in orchestrator_sessions:
+        return jsonify({"error": "Invalid or missing session_id"}), 400
+    selected = data.get('selected_speakers')
+    if selected is None:
+        return jsonify({"error": "'selected_speakers' is required"}), 400
+    orchestrator = orchestrator_sessions[session_id]
+    orchestrator.selected_speakers = selected
+    orchestrator.memory["selected_speakers"] = selected
+    return jsonify({"status": "ok", "selected_speakers": selected}), 200
+
+@app.route('/api/select/exhibitors', methods=['POST'])
+def set_selected_exhibitors():
+    data = request.get_json()
+    session_id = data.get('session_id')
+    if not session_id or session_id not in orchestrator_sessions:
+        return jsonify({"error": "Invalid or missing session_id"}), 400
+    selected = data.get('selected_exhibitors')
+    if selected is None:
+        return jsonify({"error": "'selected_exhibitors' is required"}), 400
+    orchestrator = orchestrator_sessions[session_id]
+    orchestrator.selected_exhibitors = selected
+    orchestrator.memory["selected_exhibitors"] = selected
+    return jsonify({"status": "ok", "selected_exhibitors": selected}), 200
+
+@app.route('/api/select/venue', methods=['POST'])
+def set_selected_venue():
+    data = request.get_json()
+    session_id = data.get('session_id')
+    if not session_id or session_id not in orchestrator_sessions:
+        return jsonify({"error": "Invalid or missing session_id"}), 400
+    selected = data.get('selected_venue')
+    if selected is None:
+        return jsonify({"error": "'selected_venue' is required"}), 400
+    orchestrator = orchestrator_sessions[session_id]
+    orchestrator.selected_venue = selected
+    orchestrator.memory["selected_venue"] = selected
+    return jsonify({"status": "ok", "selected_venue": selected}), 200
 
 @app.route('/api/schedule', methods=['POST'])
 def get_schedule():
@@ -197,6 +257,48 @@ def initiate_call():
         result = orchestrator.initiate_call(
             phone_number=phone_number,
             input_string=input_string,
+        )
+        result["session_id"] = session_id
+        return jsonify(result), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/email', methods=['POST'])
+def send_email():
+    """
+    Send an AI-drafted email based on a free-form objective.
+
+    Expected JSON body:
+        recipient_email (str): The target email address.
+        objective       (str): What the email should convey.
+        session_id      (str, optional): Reuse an existing orchestrator session
+            for richer context. If omitted, a fresh session is created.
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    recipient_email = data.get('recipient_email')
+    objective = data.get('objective')
+
+    if not recipient_email or not objective:
+        return jsonify({"error": "Both 'recipient_email' and 'objective' are required"}), 400
+
+    # Reuse an existing orchestrator or spin up a new one
+    session_id = data.get('session_id')
+    if session_id and session_id in orchestrator_sessions:
+        orchestrator = orchestrator_sessions[session_id]
+    else:
+        session_id = str(uuid.uuid4())
+        orchestrator = OrchestratorAgent()
+        orchestrator_sessions[session_id] = orchestrator
+
+    try:
+        result = orchestrator.send_objective_email(
+            recipient_email=recipient_email,
+            objective=objective,
         )
         result["session_id"] = session_id
         return jsonify(result), 200
