@@ -7,6 +7,7 @@ Two modes:
 """
 
 import json
+import os
 import time
 from typing import Any, Dict, List
 
@@ -62,7 +63,10 @@ class ProposalGenerator:
     """Generates sponsorship proposals using Groq."""
 
     def __init__(self):
-        self.client = Groq(api_key=GROQ_API_KEY)
+        # Provide a fallback key if None to prevent init crashes. 
+        # Missing keys will safely fail downstream inside _call_groq_with_retry instead of crashing process start.
+        key = GROQ_API_KEY or os.environ.get("GROQ_API_KEY") or "invalid_placeholder_key"
+        self.client = Groq(api_key=key)
         self.model = "llama-3.3-70b-versatile"
 
     # -- Batch Enrichment ------------------------------------------------

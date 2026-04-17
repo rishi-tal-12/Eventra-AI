@@ -46,6 +46,23 @@ class SponsorAgent(BaseAgent):
                 - budget_min (float, optional)
                 - budget_max (float, optional)
         """
+        # ── Map arbitrary LLM output to standard categories ──
+        raw_category = event_context["category"]
+        print(f"\n>> Normalizing category mapping for '{raw_category}' ...")
+        prompt = f"Map the event category '{raw_category}' to the closest match from these exact strings: AI, Web3, ClimateTech, Music Festival, Sports, Blockchain, Tech. Reply with ONLY the exact string, nothing else. If unsure, reply 'Tech'."
+        try:
+            response = self.proposer.client.chat.completions.create(
+                model=self.proposer.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.0
+            )
+            mapped_cat = response.choices[0].message.content.strip('\'" \n')
+            if mapped_cat:
+                event_context["category"] = mapped_cat
+                print(f"   Mapped '{raw_category}' -> '{mapped_cat}'")
+        except Exception as e:
+            print(f"   Warning: category mapping failed ({e})")
+
         ctx = EventContext(
             category=event_context["category"],
             geography=event_context["geography"],

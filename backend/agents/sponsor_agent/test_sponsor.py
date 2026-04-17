@@ -6,7 +6,7 @@ from agents.sponsor_agent.agent import SponsorAgent
 
 agent = SponsorAgent()
 result = agent.run({
-    "category": "AI",
+    "category": "college students coding in AI",
     "geography": "India",
     "target_audience_size": 5000,
     "theme_keywords": ["generative AI", "LLMs", "MLOps"],
