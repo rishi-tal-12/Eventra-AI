@@ -1,13 +1,19 @@
+import sys, os
+backend_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, backend_dir)
+for a in ["sponsor_agent", "artist_agent", "exhibitor_agent", "venue_agent", "pricing_agent", "community_agent", "instagram_agent"]:
+    sys.path.append(os.path.join(backend_dir, "agents", a))
+
 from flask import Flask, request, jsonify
 import uuid
-# from flask_cors import CORS # Uncomment if you need cross-origin
+from flask_cors import CORS
 from agents.orchestrator_agent import OrchestratorAgent
 
 from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-# CORS(app) # Enable CORS for frontend clients
+CORS(app)
 
 # In-memory storage for orchestrator sessions. 
 # For production, consider using Redis or a database to store session states.
@@ -33,10 +39,13 @@ def init_and_sponsor():
         orchestrator.extracted_info = orchestrator.extract_parameters(user_prompt)
         
         # 2. Call Sponsor Agent
+        print("calling sponsor agent")
         sponsors = orchestrator.call_sponsor_agent(memory=orchestrator.memory)
         
         # Store in session
         orchestrator_sessions[session_id] = orchestrator
+        
+        print("done all, returning from innit")
         
         return jsonify({
             "session_id": session_id,

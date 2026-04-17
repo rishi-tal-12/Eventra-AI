@@ -11,12 +11,12 @@ from typing import Optional, Dict, Any, List
 
 import pandas as pd
 
-from data_loader import DataLoader
-from similarity import compute_event_similarities
-from scoring import score_exhibitors, build_reason
-from clustering import cluster_exhibitors
-from insights import generate_insights
-from models import (
+from .data_loader import DataLoader
+from .similarity import compute_event_similarities
+from .scoring import score_exhibitors, build_reason
+from .clustering import cluster_exhibitors
+from .insights import generate_insights
+from .models import (
     RecommendationRequest,
     RecommendationResponse,
     ExhibitorRecommendation,

@@ -10,7 +10,7 @@ import json
 import sys
 import os
 
-from agents.pricing_agent.agent import PricingAgent
+from .agent import PricingAgent
 
 
 def get_user_input() -> dict:

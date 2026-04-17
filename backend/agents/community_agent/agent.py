@@ -9,7 +9,7 @@
 #   4. Refine with LLM — generate strategies, posts, Discord messages
 #   5. Validate & return structured output (Pydantic)
 #
-# LLM backend: Google Gemini.
+# LLM backend: Groq.
 # Fallback model config is in the environment / .env file.
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -20,8 +20,8 @@ from typing import Optional
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
 
-# LangChain — Google Gemini
-from langchain_google_genai import ChatGoogleGenerativeAI
+# LangChain — Groq
+from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from .prompts import (
@@ -41,14 +41,14 @@ from .utils import (
     serialize_for_prompt,
 )
 
-from config import GEMINI_API_KEY
+from config import GROQ_API_KEY
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 # How many communities to fetch per category
 TOP_SUBREDDITS = int(os.getenv("TOP_SUBREDDITS", "5"))
@@ -108,16 +108,15 @@ class CommunityAgentOutput(BaseModel):
 # LLM Client Factory
 # ─────────────────────────────────────────────────────────────────────────────
 
-def get_llm() -> ChatGoogleGenerativeAI:
+def get_llm() -> ChatGroq:
     """
-    Returns a configured ChatGoogleGenerativeAI instance.
+    Returns a configured ChatGroq instance.
     """
-    logger.info(f"Initializing LLM: model={GEMINI_MODEL}")
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
+    logger.info(f"Initializing LLM: model={GROQ_MODEL}")
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=GROQ_API_KEY,
         temperature=0.7,
-        google_api_key=GEMINI_API_KEY,
-        
     )
 
 
@@ -125,7 +124,7 @@ def get_llm() -> ChatGoogleGenerativeAI:
 # Step 1 — Artist Intelligence Pre-Pass
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_artist_analysis(llm: ChatGoogleGenerativeAI, artist: str, genre: str, location: str) -> dict:
+def run_artist_analysis(llm: ChatGroq, artist: str, genre: str, location: str) -> dict:
     """
     Runs a lightweight LLM call to extract artist community intelligence.
     This enriches the tag-matching step with artist-specific subreddit knowledge.
@@ -162,7 +161,7 @@ def run_artist_analysis(llm: ChatGoogleGenerativeAI, artist: str, genre: str, lo
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_reddit_refinement(
-    llm: ChatGoogleGenerativeAI,
+    llm: ChatGroq,
     input_data: CommunityAgentInput,
     candidate_subreddits: list[dict],
 ) -> list[SubredditRecommendation]:
@@ -251,7 +250,7 @@ def _fallback_reddit(candidates: list[dict]) -> list[SubredditRecommendation]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_discord_refinement(
-    llm: ChatGoogleGenerativeAI,
+    llm: ChatGroq,
     input_data: CommunityAgentInput,
     candidate_archetypes: list[dict],
 ) -> list[DiscordRecommendation]:

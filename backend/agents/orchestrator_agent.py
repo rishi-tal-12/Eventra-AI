@@ -1,29 +1,25 @@
 import os
 import sys
+
 import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
-from config import GEMINI_API_KEY
+from config import GROQ_API_KEY
 
 try:
-    from agents.email_bot_agent import email_bot
+    from agents.email_bot_agent.email_bot import send_greeting_email as email_bot
 except ImportError:
     email_bot = None
 
 # Mocking the Supabase client
 from supabase import create_client, Client
 
-# Importing other agents based on workspace structure
-try:
-    from agents.sponsor_agent.agent import SponsorAgent
-except ImportError:
-    SponsorAgent = None
+# Importing other agents
 
-try:
-    from agents.pricing_agent.agent import PricingAgent
-except ImportError:
-    PricingAgent = None
+from agents.sponsor_agent.agent import SponsorAgent
+
+from agents.pricing_agent.agent import PricingAgent
 
 try:
     from agents.exhibitor_agent.agent import ExhibitorAgent
@@ -50,7 +46,8 @@ from agents.calling_agent import TwilioAgent
 from tools.search_tool import web_search
 
 # Using LLM for extraction
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_groq import ChatGroq
+# GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import PromptTemplate
 
 class ExtractedInfo(BaseModel):
@@ -62,9 +59,9 @@ class ExtractedInfo(BaseModel):
 
 class OrchestratorAgent:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=GEMINI_API_KEY,
+        self.llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            api_key=GROQ_API_KEY,
             temperature=0.7,
         )
         
@@ -83,8 +80,10 @@ class OrchestratorAgent:
             
         self.artist_agent = ArtistAgent()
         self.venue_agent = VenueAgent()
-        self.sponsor_agent = SponsorAgent() if SponsorAgent else None
-        self.pricing_agent = PricingAgent() if PricingAgent else None
+        self.sponsor_agent = SponsorAgent()
+        print("spons bangya")
+        self.pricing_agent = PricingAgent()
+        print("pricing bangya")
         
         self.exhibitor_agent = None
         if ExhibitorAgent:
@@ -103,12 +102,13 @@ class OrchestratorAgent:
             self.calling_agent = None
 
     def extract_parameters(self, prompt: str) -> ExtractedInfo:
+        print("Starting extraction...")
         """Extract event parameters from the user prompt."""
-        extraction_prompt = PromptTemplate.from_template(
-            "Extract the following information from the user prompt:\n\n{prompt}\n"
-        )
-        chain = extraction_prompt | self.llm.with_structured_output(ExtractedInfo)
-        return chain.invoke({"prompt": prompt})
+        structured_llm = self.llm.with_structured_output(ExtractedInfo)
+        print("Invoking structured LLM...")
+        res = structured_llm.invoke(f"Extract the following information from the user prompt:\n\n{prompt}\n")
+        print("Model invoked successfully", res)
+        return res
 
     def fetch_previous_events(self, description: str) -> List[Dict[str, Any]]:
         """Fetch previous events from Supabase using semantic search on description."""
@@ -196,6 +196,8 @@ class OrchestratorAgent:
 
     def call_sponsor_agent(self, memory: dict) -> List[Any]:
         """Calls the sponsor agent passing context dict, records the output to memory, and returns it."""
+        print(self.sponsor_agent)
+        print(self.extracted_info)
         if not self.sponsor_agent or not self.extracted_info:
             print("Sponsor agent not available or missing extracted info.")
             return []

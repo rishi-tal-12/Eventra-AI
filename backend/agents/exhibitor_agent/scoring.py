@@ -14,7 +14,7 @@ from typing import Dict, List, Any, Tuple
 import pandas as pd
 import numpy as np
 
-from similarity import category_similarity, geography_similarity, audience_similarity
+from .similarity import category_similarity, geography_similarity, audience_similarity
 
 logger = logging.getLogger(__name__)
 

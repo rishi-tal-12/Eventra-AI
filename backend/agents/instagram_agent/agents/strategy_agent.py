@@ -20,7 +20,7 @@ import re
 from datetime import datetime, timedelta
 
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -29,7 +29,7 @@ from agents.instagram_agent.core.models import (
     EventDetails, PostType, ScheduledPost
 )
 
-from config import GEMINI_API_KEY
+from config import GROQ_API_KEY
 
 # ─── Prompt ─────────────────────────────────────────────────────────────────
 
@@ -93,10 +93,10 @@ def strategy_agent(state: AgentState) -> AgentState:
     event: EventDetails = state["event"]
 
     #llm = ChatOpenAI(model="gpt-4o", temperature=0.4)
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        temperature=0.4,
-        google_api_key=GEMINI_API_KEY,
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=GROQ_API_KEY,
+        temperature=0.7,
     )
     chain = STRATEGY_PROMPT | llm | StrOutputParser()
 

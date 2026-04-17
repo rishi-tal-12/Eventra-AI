@@ -36,9 +36,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # LLM — now using Google Gemini
-    GOOGLE_API_KEY: str = ""
-    GEMINI_MODEL: str   = "gemini-1.5-pro"
+    # LLM — using Groq
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str   = "llama-3.3-70b-versatile"
 
     # Instagram (leave blank until you need it)
     IG_ACCESS_TOKEN: str        = ""

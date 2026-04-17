@@ -26,7 +26,7 @@ from typing import Optional
 import httpx
 import requests
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from openai import OpenAI
@@ -34,7 +34,7 @@ from openai import OpenAI
 from agents.instagram_agent.core.config import settings
 from agents.instagram_agent.core.models import AgentState, ContentTheme, ScheduledPost
 
-from config import GEMINI_API_KEY
+from config import GROQ_API_KEY
 
 # ─── Image prompt builder ───────────────────────────────────────────────────
 
@@ -208,10 +208,10 @@ def _save_locally(image_bytes: bytes, post_id: str) -> str:
 def _build_image_prompt(post: ScheduledPost, event) -> str:
     """Use LLM to expand the strategy hint into a full DALL-E prompt."""
     #llm   = ChatOpenAI(model="gpt-4o", temperature=0.6)
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        temperature=0.75,
-        google_api_key=GEMINI_API_KEY,
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=GROQ_API_KEY,
+        temperature=0.7,
     )
     chain = IMAGE_PROMPT_TEMPLATE | llm | StrOutputParser()
 

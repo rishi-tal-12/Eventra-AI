@@ -1,0 +1,14 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.81.34.56:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 102-235-891
+ * Detected change in '/home/siddharth/Documents/programs/multi/Eventra-AI/backend/agents/orchestrator_agent.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 102-235-891

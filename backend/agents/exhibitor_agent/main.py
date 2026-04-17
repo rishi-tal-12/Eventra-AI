@@ -16,8 +16,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from agent import ExhibitorAgent
-from models import (
+from .agent import ExhibitorAgent
+from .models import (
     RecommendationRequest,
     RecommendationResponse,
     HealthResponse,

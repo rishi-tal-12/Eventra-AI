@@ -20,13 +20,13 @@ import re
 from typing import Optional
 
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from agents.instagram_agent.core.models import AgentState, ContentTheme, PostType, ScheduledPost
 
-from config import GEMINI_API_KEY
+from config import GROQ_API_KEY
 
 
 # ─── Theme-specific system prompts ─────────────────────────────────────────
@@ -105,11 +105,12 @@ def content_agent(state: AgentState) -> AgentState:
     persona = THEME_PERSONAS.get(post.theme, THEME_PERSONAS[ContentTheme.HYPE])
 
     #llm   = ChatOpenAI(model="gpt-4o", temperature=0.75)
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        temperature=0.75,
-        google_api_key=GEMINI_API_KEY,
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=GROQ_API_KEY,
+        temperature=0.7,
     )
+
     chain = CONTENT_PROMPT | llm | StrOutputParser()
 
     raw = chain.invoke({

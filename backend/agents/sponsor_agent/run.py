@@ -9,7 +9,7 @@ Usage:
 import json
 import sys
 
-from agents.sponsor_agent.agent import SponsorAgent
+from .agent import SponsorAgent
 
 
 def get_user_input() -> dict:

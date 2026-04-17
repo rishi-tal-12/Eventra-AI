@@ -11,11 +11,11 @@ from twilio.twiml.voice_response import VoiceResponse, Connect
 from twilio.rest import Client as TwilioClient
 from piper.voice import PiperVoice
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage
 
-from config import GEMINI_API_KEY, NGROK_HOST, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM, TWILIO_TO
+from config import GROQ_API_KEY, NGROK_HOST, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM, TWILIO_TO
 from tools import ALL_TOOLS
 
 SYSTEM_PROMPT = """You are a helpful voice assistant on a phone call.
@@ -41,17 +41,17 @@ class TwilioAgent:
         self.whisper_model = whisper.load_model("base")
         print("Whisper model loaded.")
 
-        # LangChain Gemini agent
-        print("Setting up LangChain Gemini agent...")
+        # LangChain Groq agent
+        print("Setting up LangChain Groq agent...")
         self.agent_executor = self._build_agent()
         print("Agent ready.")
 
         self._register_routes()
 
     def _build_agent(self):
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=GEMINI_API_KEY,
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            api_key=GROQ_API_KEY,
             temperature=0.7,
         )
         # Reference: https://langchain-ai.github.io/langgraph/how-tos/create-react-agent/
