@@ -395,10 +395,88 @@ class OrchestratorAgent:
             
         try:
             if self.calling_agent and hasattr(self.calling_agent, 'make_call'):
-                self.calling_agent.make_call(to=phone, script=f"Hello {name}, we want to discuss a {role} opportunity for an event.")
+                self.calling_agent.make_call(
+                    starting_conversation=f"Hello {name}, we want to discuss a {role} opportunity for an upcoming event.",
+                    call_purpose=f"Discuss a {role} opportunity with {name} for an upcoming event.",
+                    phone_number=phone,
+                )
             print(f"Call initiated to {phone}")
         except Exception as e:
             print(f"Failed to initiate call to {phone}: {e}")
+
+    def initiate_call(self, phone_number: str, input_string: str) -> Dict[str, Any]:
+        """
+        Initiate a phone call driven by a user-provided input string.
+
+        The LLM derives a structured call_purpose and a natural opening line
+        from the free-form input, then the calling agent places the call.
+
+        Args:
+            phone_number: The mobile number to dial (E.164 format recommended).
+            input_string: Free-form description of what the call should achieve.
+                e.g. "Ask the venue manager if June 15 is available and get a
+                quote for 200 guests."
+
+        Returns:
+            A dict with call_sid, call_purpose, and starting_conversation.
+        """
+        if not self.calling_agent:
+            raise RuntimeError(
+                "Calling agent is not initialised. "
+                "Make sure the orchestrator was created inside a Flask request context."
+            )
+
+        # Use the LLM to derive a structured purpose and a conversational opener
+        derivation_prompt = f"""You are an AI assistant that prepares outbound phone calls.
+
+Given the user's description of what the call should accomplish, produce TWO things:
+
+1. **call_purpose** — A concise, action-oriented statement of the call's objective
+   (1-2 sentences). This will be injected into the voice agent's system prompt to
+   keep it on track throughout the conversation.
+
+2. **starting_conversation** — A natural, friendly opening line that the voice agent
+   will speak first when the other party picks up (1-2 sentences). It should introduce
+   the caller and smoothly lead into the purpose.
+
+User description:
+\"\"\"
+{input_string}
+\"\"\"
+
+Respond in valid JSON with exactly two keys: "call_purpose" and "starting_conversation".
+Do NOT include any other text outside the JSON object."""
+
+        try:
+            response = self.llm.invoke(derivation_prompt)
+            content = response.content if hasattr(response, 'content') else str(response)
+
+            # Parse the JSON from the LLM
+            parsed = json.loads(content)
+            call_purpose = parsed.get("call_purpose", input_string)
+            starting_conversation = parsed.get("starting_conversation", "Hello, this is Eventra calling.")
+        except Exception as e:
+            print(f"LLM derivation failed, falling back to raw input: {e}")
+            call_purpose = input_string
+            starting_conversation = "Hello, this is Eventra calling."
+
+        print(f"Call purpose: {call_purpose}")
+        print(f"Opening line: {starting_conversation}")
+
+        call_sid = self.calling_agent.make_call(
+            starting_conversation=starting_conversation,
+            call_purpose=call_purpose,
+            phone_number=phone_number,
+        )
+
+        result = {
+            "call_sid": call_sid,
+            "call_purpose": call_purpose,
+            "starting_conversation": starting_conversation,
+            "phone_number": phone_number,
+        }
+        self.memory["last_call"] = result
+        return result
 
     def build_event_schedule(self, memory: dict) -> str:
         """Builds a schedule for the whole event based on current memory state."""

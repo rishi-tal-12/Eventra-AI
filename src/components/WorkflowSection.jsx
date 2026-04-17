@@ -355,8 +355,9 @@ export default function WorkflowSection({ isActive, eventData }) {
     setSelectedItems([]);
     setShowResults(false);
 
-    if (idx === 0 && eventData) {
-      try {
+    try {
+      if (idx === 0 && eventData) {
+        // 1. Initial & Sponsor
         const prompt = `Create a ${eventData.eventType} event in ${eventData.city} for ${eventData.attendees} attendees.`;
         const res = await fetch('http://localhost:5000/api/init_and_sponsor', {
           method: 'POST',
@@ -376,19 +377,70 @@ export default function WorkflowSection({ isActive, eventData }) {
             icon: Building2, 
             metric: s.budget || 'Custom', 
             metricLabel: 'Budget',
-            image: mockResults[0].items[i % mockResults[0].items.length].image
+            image: mockResults[0]?.items[i % 3]?.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800'
           }));
           setPipelineResults(prev => ({
             ...prev,
-            0: {
-              ...prev[0],
-              items: sponsorItems
-            }
+            0: { ...prev[0], items: sponsorItems }
           }));
         }
-      } catch (err) {
-        console.error('Error fetching init_and_sponsor:', err);
+      } else if (sessionId) {
+        let endpoints = [];
+        if (idx === 1) endpoints = ['/api/speaker'];
+        if (idx === 2) endpoints = ['/api/exhibitor'];
+        if (idx === 3) endpoints = ['/api/venue'];
+        if (idx === 4) endpoints = ['/api/pricing'];
+        if (idx === 5) endpoints = ['/api/community', '/api/instagram'];
+        if (idx === 6) endpoints = ['/api/schedule'];
+
+        if (endpoints.length > 0) {
+          const results = await Promise.all(
+            endpoints.map(ep => fetch(`http://localhost:5000${ep}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ session_id: sessionId })
+            }).then(r => r.json()))
+          );
+          
+          const combinedData = Object.assign({}, ...results);
+          setApiResponseData(combinedData);
+
+          let itemsData = [];
+          let itemsField = 'items';
+          let defaultMetricLabel = 'Details';
+          let metricField = 'metric';
+          
+          if (idx === 1) { itemsField = 'speakers_artists'; metricField = 'location'; defaultMetricLabel = 'Location'; }
+          if (idx === 2) { itemsField = 'exhibitors'; metricField = 'industry'; defaultMetricLabel = 'Industry'; }
+          if (idx === 3) { itemsField = 'venues'; metricField = 'capacity'; defaultMetricLabel = 'Capacity'; }
+          // Handle pricing
+          if (idx === 4) { itemsField = 'pricing'; }
+          // Handle community & instagram combined
+          if (idx === 5) { itemsField = 'communities'; }
+          if (idx === 6) { itemsField = 'schedule'; }
+
+          if (combinedData[itemsField] && Array.isArray(combinedData[itemsField])) {
+            itemsData = combinedData[itemsField].slice(0, 3).map((s, i) => ({
+              name: s.name || s.title || s.company_name || s.stage_name || `Result ${i+1}`,
+              role: s.role || s.industry || s.description || s.city || 'Processed',
+              match: s.match_score || Math.floor(Math.random() * 20 + 80),
+              icon: Globe, 
+              metric: s[metricField] || s.price || s.budget || 'Custom', 
+              metricLabel: defaultMetricLabel,
+              image: mockResults[idx]?.items[i % 3]?.image || 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=800'
+            }));
+            
+            if (itemsData.length > 0) {
+               setPipelineResults(prev => ({
+                 ...prev,
+                 [idx]: { ...(prev[idx] || {}), items: itemsData }
+               }));
+            }
+          }
+        }
       }
+    } catch (err) {
+      console.error(`Error running agent index ${idx}:`, err);
     }
 
     setTimeout(() => setShowResults(true), 1500); // Wait simulated time

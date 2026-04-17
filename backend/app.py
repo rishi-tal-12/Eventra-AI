@@ -163,6 +163,48 @@ def get_schedule():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/call', methods=['POST'])
+def initiate_call():
+    """
+    Initiate an AI-driven phone call.
+
+    Expected JSON body:
+        phone_number (str): The mobile number to call (E.164 format, e.g. "+14155551234").
+        input_string (str): Free-form description of the call's purpose.
+        session_id  (str, optional): Reuse an existing orchestrator session so the
+            call agent has full event context. If omitted, a fresh session is created.
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    phone_number = data.get('phone_number')
+    input_string = data.get('input_string')
+
+    if not phone_number or not input_string:
+        return jsonify({"error": "Both 'phone_number' and 'input_string' are required"}), 400
+
+    # Reuse an existing orchestrator or spin up a new one
+    session_id = data.get('session_id')
+    if session_id and session_id in orchestrator_sessions:
+        orchestrator = orchestrator_sessions[session_id]
+    else:
+        session_id = str(uuid.uuid4())
+        orchestrator = OrchestratorAgent()
+        orchestrator_sessions[session_id] = orchestrator
+
+    try:
+        result = orchestrator.initiate_call(
+            phone_number=phone_number,
+            input_string=input_string,
+        )
+        result["session_id"] = session_id
+        return jsonify(result), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "healthy"}), 200
