@@ -10,8 +10,6 @@ Eventra-AI emerges as a comprehensive, open-source solution designed to oblitera
 
 Rather than starting from a blank slate for every new conference, organizers utilizing Eventra-AI can rely on agents that autonomously scrape, aggregate, and analyze data from events held globally over the past 12 to 24 months.
 
----
-
 ## 2. Architecture
 
 Eventra-AI uses an **Event-Driven Multi-Agent Architecture**.
@@ -48,8 +46,6 @@ Eventra-AI uses an **Event-Driven Multi-Agent Architecture**.
 - Oracle-based verification
 - Ethereum-based execution
 
----
-
 ## 3. Features
 
 ### 3.1 Multi-Agent System
@@ -77,8 +73,6 @@ Eventra-AI uses an **Event-Driven Multi-Agent Architecture**.
 - Adaptive alerts
 - Real-time metrics tracking
 
----
-
 ## 4. Getting Started
 
 ### Prerequisites
@@ -87,8 +81,6 @@ Eventra-AI uses an **Event-Driven Multi-Agent Architecture**.
 - Java 17 + Maven
 - Python 3.10+
 - Hardhat / Foundry (Web3)
-
----
 
 ### Installation
 
@@ -123,8 +115,6 @@ npm install
 npx hardhat compile
 ```
 
----
-
 ### Configuration (.env)
 
 ```env
@@ -138,8 +128,6 @@ LINKEDIN_SCRAPER_TOKEN=...
 SEPOLIA_RPC_URL=...
 PRIVATE_KEY=...
 ```
-
----
 
 ### Run Locally
 
@@ -171,8 +159,6 @@ cd frontend
 yarn dev
 ```
 
----
-
 ## 5. Usage
 
 1. Create event (domain, audience, budget)
@@ -181,8 +167,6 @@ yarn dev
 4. Review recommendations
 5. Confirm → triggers smart contract execution
 
----
-
 ## 6. Deployment
 
 * Frontend: Vercel
@@ -190,15 +174,11 @@ yarn dev
 * Kafka: Confluent Cloud
 * CI/CD: GitHub Actions
 
----
-
 ## 7. Project Status
 
 * Architecture complete
 * Smart contracts deployed (Sepolia)
 * Dataset ready (2025–2026 events)
-
----
 
 ## 8. Contributing
 
@@ -214,10 +194,6 @@ Steps:
 2. Create branch
 3. Submit PR
 
----
-
 ## 9. License
 
 MIT License
-
----
