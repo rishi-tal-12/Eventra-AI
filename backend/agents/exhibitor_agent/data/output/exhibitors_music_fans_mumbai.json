@@ -1,0 +1,159 @@
+{
+  "event_category": "music fans",
+  "event_geography": "mumbai",
+  "total_found": 66,
+  "recommendations": [
+    {
+      "name": "Spotify",
+      "category": "Media",
+      "relevance_score": 0.6063,
+      "reason": "Spotify (Media); active in Music; with presence in Mumbai, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "JBL",
+      "category": "Brand",
+      "relevance_score": 0.5903,
+      "reason": "JBL (Brand); active in Music; with presence in Mumbai, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Red Bull",
+      "category": "Brand",
+      "relevance_score": 0.5743,
+      "reason": "Red Bull (Brand); active in Music; with presence in Mumbai, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Yamaha Music India",
+      "category": "Enterprise",
+      "relevance_score": 0.5565,
+      "reason": "Yamaha Music India (Enterprise); active in Music; with presence in Mumbai, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "BookMyShow",
+      "category": "Platform",
+      "relevance_score": 0.5543,
+      "reason": "BookMyShow (Platform); active in Music; with presence in Mumbai, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "JioSaavn",
+      "category": "Media",
+      "relevance_score": 0.5467,
+      "reason": "JioSaavn (Media); active in Music; with presence in Mumbai, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Mood Indigo 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Google Cloud",
+      "category": "Enterprise",
+      "relevance_score": 0.5376,
+      "reason": "Google Cloud (Enterprise); active in Data Science, AI, FinTech; with presence in Mumbai, India; exhibited at 10 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "TechXplore AI Conference 2023",
+        "Global AI Expo 2023",
+        "India DataFest 2023",
+        "Nasscom AI Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Boat",
+      "category": "Brand",
+      "relevance_score": 0.5332,
+      "reason": "Boat (Brand); active in Music; with presence in Mumbai, India; exhibited at 2 past event(s) including Mood Indigo 2024.",
+      "past_events": [
+        "Mood Indigo 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Microsoft Azure",
+      "category": "Enterprise",
+      "relevance_score": 0.5223,
+      "reason": "Microsoft Azure (Enterprise); active in Cloud, AI, FinTech; with presence in Mumbai, India; exhibited at 7 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Amazon AWS",
+      "category": "Enterprise",
+      "relevance_score": 0.5221,
+      "reason": "Amazon AWS (Enterprise); active in Cloud, Data Science, AI; with presence in Mumbai, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "India DataFest 2023",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    }
+  ]
+}

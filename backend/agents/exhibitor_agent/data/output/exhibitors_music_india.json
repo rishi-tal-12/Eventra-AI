@@ -1,0 +1,153 @@
+{
+  "event_category": "Music",
+  "event_geography": "India",
+  "total_found": 66,
+  "recommendations": [
+    {
+      "name": "Spotify",
+      "category": "Media",
+      "relevance_score": 0.9582,
+      "reason": "Spotify (Media); has exhibited at Music events before; with presence in Pune, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "JBL",
+      "category": "Brand",
+      "relevance_score": 0.9422,
+      "reason": "JBL (Brand); has exhibited at Music events before; with presence in Pune, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Red Bull",
+      "category": "Brand",
+      "relevance_score": 0.9262,
+      "reason": "Red Bull (Brand); has exhibited at Music events before; with presence in Pune, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "BookMyShow",
+      "category": "Platform",
+      "relevance_score": 0.9062,
+      "reason": "BookMyShow (Platform); has exhibited at Music events before; with presence in Pune, India; exhibited at 5 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Yamaha Music India",
+      "category": "Enterprise",
+      "relevance_score": 0.9034,
+      "reason": "Yamaha Music India (Enterprise); has exhibited at Music events before; with presence in Pune, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Mood Indigo 2024",
+        "Echoes of India Music Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Kingfisher",
+      "category": "Brand",
+      "relevance_score": 0.8932,
+      "reason": "Kingfisher (Brand); has exhibited at Music events before; with presence in Pune, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Sunburn Festival 2023",
+        "Echoes of India Music Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Bose",
+      "category": "Brand",
+      "relevance_score": 0.8867,
+      "reason": "Bose (Brand); has exhibited at Music events before; with presence in Pune, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Echoes of India Music Summit 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Budweiser",
+      "category": "Brand",
+      "relevance_score": 0.8821,
+      "reason": "Budweiser (Brand); has exhibited at Music events before; with presence in Jaipur, India; exhibited at 2 past event(s) including Sunburn Festival 2023.",
+      "past_events": [
+        "Sunburn Festival 2023",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Pioneer DJ",
+      "category": "Enterprise",
+      "relevance_score": 0.8821,
+      "reason": "Pioneer DJ (Enterprise); has exhibited at Music events before; with presence in Jaipur, India; exhibited at 2 past event(s) including Sunburn Festival 2023.",
+      "past_events": [
+        "Sunburn Festival 2023",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "JioSaavn",
+      "category": "Media",
+      "relevance_score": 0.8767,
+      "reason": "JioSaavn (Media); has exhibited at Music events before; with presence in Pune, India; exhibited at 3 past event(s) including NH7 Weekender 2023.",
+      "past_events": [
+        "NH7 Weekender 2023",
+        "Mood Indigo 2024",
+        "Magnetic Fields Festival 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "event_category": "AI",
+  "event_geography": "Bangalore, India",
+  "total_found": 66,
+  "recommendations": [
+    {
+      "name": "Google Cloud",
+      "category": "Enterprise",
+      "relevance_score": 0.9644,
+      "reason": "Google Cloud (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 10 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "TechXplore AI Conference 2023",
+        "Global AI Expo 2023",
+        "India DataFest 2023",
+        "Nasscom AI Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Microsoft Azure",
+      "category": "Enterprise",
+      "relevance_score": 0.9463,
+      "reason": "Microsoft Azure (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 7 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Amazon AWS",
+      "category": "Enterprise",
+      "relevance_score": 0.944,
+      "reason": "Amazon AWS (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "India DataFest 2023",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Hugging Face",
+      "category": "Platform",
+      "relevance_score": 0.9394,
+      "reason": "Hugging Face (Platform); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 8 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "TechXplore AI Conference 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "ML India Conference 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "NVIDIA",
+      "category": "Enterprise",
+      "relevance_score": 0.9199,
+      "reason": "NVIDIA (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 5 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Global AI Expo 2023",
+        "ML India Conference 2024",
+        "AI & Robotics Asia 2024",
+        "AI World Congress USA 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Weights & Biases",
+      "category": "Tool",
+      "relevance_score": 0.9091,
+      "reason": "Weights & Biases (Tool); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 8 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "ML India Conference 2024",
+        "AI & Robotics Asia 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Fractal Analytics",
+      "category": "Enterprise",
+      "relevance_score": 0.9082,
+      "reason": "Fractal Analytics (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "Nasscom AI Summit 2024",
+        "Cypher India 2024",
+        "FinTech AI Summit India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Databricks",
+      "category": "Platform",
+      "relevance_score": 0.9057,
+      "reason": "Databricks (Platform); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "India DataFest 2023",
+        "Cypher India 2024",
+        "AI World Congress USA 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "IBM Watson",
+      "category": "Enterprise",
+      "relevance_score": 0.9055,
+      "reason": "IBM Watson (Enterprise); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 4 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Nasscom AI Summit 2024",
+        "Cypher India 2024",
+        "FinTech AI Summit India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Sarvam AI",
+      "category": "Startup",
+      "relevance_score": 0.9007,
+      "reason": "Sarvam AI (Startup); has exhibited at AI events before; with presence in Bangalore, India; exhibited at 5 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Nasscom AI Summit 2024",
+        "Cypher India 2024",
+        "FinTech AI Summit India 2024",
+        "NeurIPS India Satellite 2023"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    }
+  ]
+}

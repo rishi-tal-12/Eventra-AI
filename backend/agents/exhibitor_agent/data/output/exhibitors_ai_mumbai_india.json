@@ -1,0 +1,85 @@
+{
+  "event_category": "AI",
+  "event_geography": "Mumbai, India",
+  "total_found": 66,
+  "recommendations": [
+    {
+      "name": "Google Cloud",
+      "category": "Enterprise",
+      "relevance_score": 0.9644,
+      "reason": "Google Cloud (Enterprise); has exhibited at AI events before; with presence in Mumbai, India; exhibited at 10 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "TechXplore AI Conference 2023",
+        "Global AI Expo 2023",
+        "India DataFest 2023",
+        "Nasscom AI Summit 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Microsoft Azure",
+      "category": "Enterprise",
+      "relevance_score": 0.9463,
+      "reason": "Microsoft Azure (Enterprise); has exhibited at AI events before; with presence in Mumbai, India; exhibited at 7 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Amazon AWS",
+      "category": "Enterprise",
+      "relevance_score": 0.944,
+      "reason": "Amazon AWS (Enterprise); has exhibited at AI events before; with presence in Mumbai, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "India DataFest 2023",
+        "SaaS & Cloud Expo India 2023",
+        "Cypher India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Hugging Face",
+      "category": "Platform",
+      "relevance_score": 0.9394,
+      "reason": "Hugging Face (Platform); has exhibited at AI events before; with presence in Mumbai, India; exhibited at 8 past event(s) including AI Summit India 2023.",
+      "past_events": [
+        "AI Summit India 2023",
+        "TechXplore AI Conference 2023",
+        "Global AI Expo 2023",
+        "Nasscom AI Summit 2024",
+        "ML India Conference 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    },
+    {
+      "name": "Fractal Analytics",
+      "category": "Enterprise",
+      "relevance_score": 0.9082,
+      "reason": "Fractal Analytics (Enterprise); has exhibited at AI events before; with presence in Mumbai, India; exhibited at 4 past event(s) including TechXplore AI Conference 2023.",
+      "past_events": [
+        "TechXplore AI Conference 2023",
+        "Nasscom AI Summit 2024",
+        "Cypher India 2024",
+        "FinTech AI Summit India 2024"
+      ],
+      "contact_email": null,
+      "contact_phone": null,
+      "website": null
+    }
+  ]
+}

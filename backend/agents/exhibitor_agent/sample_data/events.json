@@ -1,9 +1,0 @@
-[
-    {
-      "id": "mock_event_1",
-      "category": "AI",
-      "geography": "USA",
-      "audience_size": 1500,
-      "exhibitors": [{"name": "Mock AI Startup", "relevance": 0.9, "category": "AI"}]
-    }
-]

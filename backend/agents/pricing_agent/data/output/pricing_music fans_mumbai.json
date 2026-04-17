@@ -1,0 +1,113 @@
+{
+  "ticket_tiers": [
+    {
+      "tier_name": "Regular",
+      "description": "Full conference access (all sessions, networking, keynotes)",
+      "price_usd": 20,
+      "price_local": 20.0,
+      "currency": "USD",
+      "allocation_pct": 60,
+      "expected_sales": 120,
+      "revenue_usd": 2400,
+      "conversion_rate": 0.1
+    },
+    {
+      "tier_name": "Workshop Only",
+      "description": "Access to hands-on workshop sessions only",
+      "price_usd": 15,
+      "price_local": 15.0,
+      "currency": "USD",
+      "allocation_pct": 20,
+      "expected_sales": 59,
+      "revenue_usd": 885,
+      "conversion_rate": 0.1492
+    },
+    {
+      "tier_name": "Student",
+      "description": "Discounted access for students with valid ID",
+      "price_usd": 10,
+      "price_local": 10.0,
+      "currency": "USD",
+      "allocation_pct": 20,
+      "expected_sales": 76,
+      "revenue_usd": 760,
+      "conversion_rate": 0.1916
+    }
+  ],
+  "footfall_prediction": {
+    "expected_attendance": 260,
+    "confidence_interval": [
+      210,
+      309
+    ],
+    "attendance_by_tier": {
+      "Regular": 123,
+      "Workshop Only": 60,
+      "Student": 77
+    }
+  },
+  "revenue_projection": {
+    "ticket_revenue": 4045,
+    "sponsorship_revenue": 0.0,
+    "exhibitor_revenue": 0.0,
+    "total_revenue": 4045.0,
+    "costs": {
+      "venue_cost": 10000.0,
+      "speaker_fees": 5000,
+      "marketing_cost": 404.5,
+      "ops_overhead": 2310.67,
+      "total_cost": 17715.17
+    },
+    "net_profit": -13670.17,
+    "break_even_attendance": 1117,
+    "roi_percentage": -77.17
+  },
+  "sensitivity_analysis": [
+    {
+      "scenario": "Pessimistic (-40%)",
+      "demand_multiplier": 0.6,
+      "attendance": 156,
+      "ticket_revenue": 2427.0,
+      "total_revenue": 2427.0,
+      "net_profit": -15288.17
+    },
+    {
+      "scenario": "Low demand (-20%)",
+      "demand_multiplier": 0.8,
+      "attendance": 208,
+      "ticket_revenue": 3236.0,
+      "total_revenue": 3236.0,
+      "net_profit": -14479.17
+    },
+    {
+      "scenario": "Base case",
+      "demand_multiplier": 1.0,
+      "attendance": 260,
+      "ticket_revenue": 4045.0,
+      "total_revenue": 4045.0,
+      "net_profit": -13670.17
+    },
+    {
+      "scenario": "High demand (+20%)",
+      "demand_multiplier": 1.2,
+      "attendance": 312,
+      "ticket_revenue": 4854.0,
+      "total_revenue": 4854.0,
+      "net_profit": -12861.17
+    },
+    {
+      "scenario": "Optimistic (+40%)",
+      "demand_multiplier": 1.4,
+      "attendance": 364,
+      "ticket_revenue": 5663.0,
+      "total_revenue": 5663.0,
+      "net_profit": -12052.17
+    }
+  ],
+  "pricing_rationale": "The pricing strategy for the music fans conference in Mumbai was carefully crafted to balance revenue goals with attendee demand and market conditions. The chosen price points of $20 for regular tickets, $15 for workshop-only tickets, and $10 for student tickets were selected based on an analysis of the local market and target audience. The regular ticket price of $20 is competitive with other similar events in Mumbai, while the discounted student ticket price of $10 aims to attract a younger demographic and foster a sense of community among music enthusiasts. The workshop-only ticket option at $15 provides an alternative for attendees who are interested in specific workshops but may not want to attend the full conference.\n\nThe tier structure is designed to cater to different attendee segments, offering flexibility and options to suit various budgets and preferences. The regular ticket is expected to appeal to the majority of attendees, while the workshop-only ticket will attract those with specific interests. The student ticket, with its discounted price, will help to encourage student participation and create a diverse and vibrant atmosphere at the conference. By offering multiple ticket tiers, the conference organizers aim to create a sense of inclusivity and make the event accessible to a broader range of music fans.\n\nFrom a financial perspective, the event faces significant challenges, with total costs exceeding $17,000 and a projected net loss of over $13,000. The break-even attendance of 1,117 suggests that the event will need to attract a substantial number of attendees to achieve financial viability. The return on investment (ROI) of -77.2% is a concern, indicating that the event may not generate sufficient revenue to justify the costs. To mitigate these risks, the conference organizers may need to consider alternative revenue streams, such as sponsorships or exhibitor fees, to supplement ticket sales. Additionally, careful management of costs and expenses will be crucial to minimizing losses and ensuring the long-term sustainability of the event.\n\nThe key risks associated with the event include low attendance, high costs, and limited revenue streams. To address these risks, the conference organizers should focus on developing a robust marketing strategy to attract a large and diverse audience. This could include leveraging social media, partnering with local music organizations, and offering special promotions or discounts to incentivize ticket sales. Furthermore, the organizers should explore opportunities to secure sponsorships or exhibitor fees to reduce the event's reliance on ticket revenue. By taking a proactive and data-driven approach to event management, the conference organizers can work to mitigate risks and create a successful and financially viable event.",
+  "benchmarks_used": 11,
+  "market_comparison": {
+    "benchmark_avg_price": 28.45,
+    "benchmark_avg_attendance": 700
+  }
+}

@@ -17,7 +17,6 @@ from dotenv import load_dotenv
 # ── Load .env once at import time ────────────────────────────────────────────
 load_dotenv()
 
-# ── Hardcoded sender details (update with your info) ─────────────────────────
 SENDER_NAME = "Eventra AI"          # ← Replace with your name
 SENDER_EMAIL = "biluman0707@gmail.com"        # ← Replace with your email
 

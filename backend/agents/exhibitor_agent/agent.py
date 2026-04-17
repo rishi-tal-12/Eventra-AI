@@ -1,244 +1,326 @@
 """
-agent.py - The Exhibitor Agent orchestrator.
+Exhibitor Agent — recommends relevant exhibitors to invite to an event.
 
-Wires together: DataLoader → Similarity → Scoring → Clustering → Insights
-Designed to be pluggable into a multi-agent orchestrator via the `run()` method.
+Pipeline:
+  1. Load past event data (past.json) at startup
+  2. Build an index of exhibitors aggregated across all historical events
+  3. On each run, filter and score exhibitors by category, geography, and audience fit
+  4. Return a ranked list of exhibitor recommendations
 """
-import logging
-import time
-from functools import lru_cache
-from typing import Optional, Dict, Any, List
 
-import pandas as pd
+import json
+import math
+import os
+from collections import defaultdict
+from typing import Any, Dict, List, Optional
 
-from .data_loader import DataLoader
-from .similarity import compute_event_similarities
-from .scoring import score_exhibitors, build_reason
-from .clustering import cluster_exhibitors
-from .insights import generate_insights
 from .models import (
+    ExhibitorRecommendation,
     RecommendationRequest,
     RecommendationResponse,
-    ExhibitorRecommendation,
-    ClusterInfo,
-    SimilarEvent,
-    ExhibitorType,
 )
 
-logger = logging.getLogger(__name__)
+# Path to the curated past events data
+DATA_PATH = os.path.join(
+    os.path.dirname(__file__), "data", "output", "past.json"
+)
 
-# Minimum similarity threshold to consider an event "similar"
-MIN_EVENT_SIMILARITY = 0.20
-# If fewer than this many similar events are found, relax the threshold
-FALLBACK_MIN_EVENTS = 3
+# Output directory for persisted results
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "data", "output")
 
 
 class ExhibitorAgent:
     """
-    Production-grade exhibitor recommendation agent.
-
-    Usage:
-        agent = ExhibitorAgent()
-        agent.load_data()
-        response = agent.run(request)
+    AI agent that discovers and recommends exhibitors for events
+    based on historical past-event data.
     """
 
-    VERSION = "1.0.0"
-
-    def __init__(self, data_path: Optional[str] = None, use_ml_clustering: bool = True):
-        self.loader = DataLoader(data_path)
-        self.use_ml_clustering = use_ml_clustering
+    def __init__(self):
+        self.name = "exhibitor_agent"
+        self.raw_events: List[Dict[str, Any]] = []
+        self.exhibitor_index: Dict[str, Dict[str, Any]] = {}
         self._loaded = False
-        logger.info(f"ExhibitorAgent v{self.VERSION} initialised.")
 
-    # ------------------------------------------------------------------
-    # Lifecycle
-    # ------------------------------------------------------------------
+    # ── Data loading ────────────────────────────────────────────────────
 
-    def load_data(self) -> "ExhibitorAgent":
-        """Load dataset. Call once at startup."""
-        self.loader.load()
+    def load_data(self, path: Optional[str] = None):
+        """
+        Load the past.json event data and build an internal exhibitor index.
+
+        The index is keyed by exhibitor name and aggregates:
+          - type: exhibitor type (Enterprise, Startup, etc.)
+          - booth_sizes: list of booth sizes across events
+          - categories: set of event categories they've appeared in
+          - subcategories: set of event subcategories
+          - countries: set of countries
+          - locations: set of locations
+          - events: list of event names they exhibited at
+          - audience_sizes: list of audience sizes of those events
+          - event_count: total appearances
+        """
+        data_path = path or DATA_PATH
+
+        if not os.path.exists(data_path):
+            print(f"[ExhibitorAgent] WARNING: Data file not found at {data_path}")
+            self._loaded = True
+            return
+
+        print(f"[ExhibitorAgent] Loading data from {data_path} ...")
+        with open(data_path, "r", encoding="utf-8") as f:
+            self.raw_events = json.load(f)
+        print(f"[ExhibitorAgent] Loaded {len(self.raw_events)} past event records.")
+
+        self._build_index()
         self._loaded = True
-        summary = self.loader.summary()
-        logger.info(f"Data loaded: {summary}")
-        return self
 
-    def health(self) -> Dict[str, Any]:
-        summary = self.loader.summary() if self._loaded else {}
-        return {
-            "status": "ok" if self._loaded else "not_loaded",
-            "version": self.VERSION,
-            "dataset_loaded": self._loaded,
-            "total_events": summary.get("total_events", 0),
-            "total_unique_exhibitors": summary.get("unique_exhibitors", 0),
-        }
+    def _build_index(self):
+        """
+        Build an exhibitor index from the past event records.
 
-    # ------------------------------------------------------------------
-    # Main pipeline
-    # ------------------------------------------------------------------
-
-    def run(self, request: RecommendationRequest, memory: dict = None) -> RecommendationResponse:
-        if not self._loaded:
-            raise RuntimeError("Call load_data() before run().")
-
-        t0 = time.perf_counter()
-        logger.info(f"Running agent for: {request}")
-
-        events_df = self.loader.events_df
-        exhibitors_df = self.loader.exhibitors_df
-
-        # ── Step 1: Find similar events ──────────────────────────────
-        scored_events = compute_event_similarities(
-            query_category=request.category,
-            query_geography=request.geography,
-            query_audience=request.audience_size,
-            events_df=events_df,
+        Each record has an 'exhibitors' array with {name, type, booth_size}.
+        We aggregate across all events to build a profile per exhibitor.
+        """
+        index: Dict[str, Dict[str, Any]] = defaultdict(
+            lambda: {
+                "type": "",
+                "booth_sizes": [],
+                "categories": set(),
+                "subcategories": set(),
+                "countries": set(),
+                "locations": set(),
+                "events": [],
+                "audience_sizes": [],
+                "event_count": 0,
+            }
         )
 
-        # Pick threshold dynamically
-        threshold = MIN_EVENT_SIMILARITY
-        similar = scored_events[scored_events["similarity_score"] >= threshold]
-        if len(similar) < FALLBACK_MIN_EVENTS:
-            # Relax threshold gradually
-            for t in [0.15, 0.10, 0.05]:
-                similar = scored_events[scored_events["similarity_score"] >= t]
-                if len(similar) >= FALLBACK_MIN_EVENTS:
-                    logger.info(f"Relaxed similarity threshold to {t}")
+        for event in self.raw_events:
+            category = event.get("category", "")
+            subcategory = event.get("subcategory", "")
+            country = event.get("country", "")
+            location = event.get("location", "")
+            audience_size = event.get("audience_size", 0)
+            event_name = event.get("event_name", "")
+
+            for exhibitor in event.get("exhibitors", []):
+                name = exhibitor.get("name", "").strip()
+                if not name:
+                    continue
+
+                entry = index[name]
+                entry["type"] = exhibitor.get("type", entry["type"])
+                entry["booth_sizes"].append(exhibitor.get("booth_size", "small"))
+                entry["categories"].add(category)
+                entry["subcategories"].add(subcategory)
+                entry["countries"].add(country)
+                entry["locations"].add(location)
+                entry["events"].append(event_name)
+                entry["audience_sizes"].append(audience_size)
+                entry["event_count"] += 1
+
+        # Convert sets to lists for serializability
+        for name, info in index.items():
+            self.exhibitor_index[name] = {
+                "type": info["type"],
+                "booth_sizes": info["booth_sizes"],
+                "categories": list(info["categories"]),
+                "subcategories": list(info["subcategories"]),
+                "countries": list(info["countries"]),
+                "locations": list(info["locations"]),
+                "events": info["events"],
+                "audience_sizes": info["audience_sizes"],
+                "event_count": info["event_count"],
+            }
+
+        print(
+            f"[ExhibitorAgent] Built index with {len(self.exhibitor_index)} unique exhibitors "
+            f"from {len(self.raw_events)} events."
+        )
+
+    # ── Scoring / ranking ───────────────────────────────────────────────
+
+    def _score_exhibitor(
+        self,
+        name: str,
+        info: Dict[str, Any],
+        request: RecommendationRequest,
+    ) -> float:
+        """
+        Compute a relevance score (0-1) for an exhibitor relative to the request.
+
+        Scoring breakdown (weights sum to 1.0):
+          - Category match   : 0.40  (exact category match in their history)
+          - Geography match  : 0.25  (country or location substring match)
+          - Popularity        : 0.15  (how many events they've exhibited at)
+          - Audience fit      : 0.10  (how close their typical audience is)
+          - Booth size        : 0.10  (larger booths = more serious exhibitors)
+        """
+        score = 0.0
+        cat_lower = request.category.lower()
+        geo_lower = request.geography.lower()
+
+        # ── Category match (0.40) ──
+        exhibitor_categories = [c.lower() for c in info.get("categories", [])]
+        exhibitor_subcategories = [s.lower() for s in info.get("subcategories", [])]
+
+        if cat_lower in exhibitor_categories:
+            score += 0.40
+        else:
+            # Partial keyword match across categories and subcategories
+            cat_keywords = set(cat_lower.split())
+            all_cat_text = " ".join(exhibitor_categories + exhibitor_subcategories)
+            hits = sum(1 for kw in cat_keywords if kw in all_cat_text)
+            if cat_keywords:
+                score += 0.25 * (hits / len(cat_keywords))
+
+        # ── Geography match (0.25) ──
+        for loc in info.get("locations", []):
+            if loc and geo_lower in loc.lower():
+                score += 0.25
+                break
+        else:
+            for country in info.get("countries", []):
+                if country and geo_lower in country.lower():
+                    score += 0.15
                     break
 
-        if similar.empty:
-            similar = scored_events.head(FALLBACK_MIN_EVENTS)
-            logger.warning("Using top-N events regardless of similarity score.")
+        # ── Popularity (0.15) ──
+        event_count = info.get("event_count", 1)
+        score += 0.15 * min(1.0, math.log1p(event_count) / math.log1p(10))
 
-        similar_event_ids = similar["event_id"].tolist()
-        logger.info(f"Selected {len(similar_event_ids)} similar events.")
+        # ── Audience size fit (0.10) ──
+        audience_sizes = info.get("audience_sizes", [])
+        if audience_sizes:
+            avg_audience = sum(audience_sizes) / len(audience_sizes)
+            # Closer the audience sizes, higher the score
+            ratio = min(request.audience_size, avg_audience) / max(request.audience_size, avg_audience, 1)
+            score += 0.10 * ratio
 
-        # ── Step 2: Extract exhibitor pool from similar events ────────
-        exhibitor_pool = exhibitors_df[exhibitors_df["event_id"].isin(similar_event_ids)].copy()
+        # ── Booth size signal (0.10) ──
+        booth_sizes = info.get("booth_sizes", [])
+        booth_score_map = {"large": 1.0, "medium": 0.6, "small": 0.3}
+        if booth_sizes:
+            avg_booth = sum(booth_score_map.get(b, 0.3) for b in booth_sizes) / len(booth_sizes)
+            score += 0.10 * avg_booth
 
-        if exhibitor_pool.empty:
-            logger.warning("Exhibitor pool is empty after filtering.")
-            return self._empty_response(request, similar, events_df)
+        return round(min(score, 1.0), 4)
 
-        # ── Step 3 + 4: Pattern learning + scoring ───────────────────
-        scored_df = score_exhibitors(
-            exhibitor_pool=exhibitor_pool,
-            all_exhibitor_rows=exhibitors_df,
-            query_category=request.category,
-            query_geography=request.geography,
-            query_audience=request.audience_size,
-            similar_event_ids=similar_event_ids,
-        )
+    def _generate_reason(
+        self,
+        name: str,
+        info: Dict[str, Any],
+        request: RecommendationRequest,
+    ) -> str:
+        """Generate a short human-readable reason for the recommendation."""
+        parts = []
 
-        # Apply min score filter
-        if request.min_score and request.min_score > 0:
-            scored_df = scored_df[scored_df["score"] >= request.min_score]
+        exhibitor_type = info.get("type", "Exhibitor")
+        parts.append(f"{name} ({exhibitor_type})")
 
-        top_df = scored_df.head(request.top_n or 10)
+        # Category match info
+        categories = info.get("categories", [])
+        if request.category.lower() in [c.lower() for c in categories]:
+            parts.append(f"has exhibited at {request.category} events before")
+        elif categories:
+            parts.append(f"active in {', '.join(categories[:3])}")
 
-        # ── Step 5: Clustering ────────────────────────────────────────
-        clusters_raw = cluster_exhibitors(scored_df, use_ml=self.use_ml_clustering)
+        # Geography info
+        geo_lower = request.geography.lower()
+        matching_locs = [l for l in info.get("locations", []) if l and geo_lower in l.lower()]
+        if matching_locs:
+            parts.append(f"with presence in {matching_locs[0]}")
 
-        # ── Step 6: Build recommendations ────────────────────────────
-        recommendations = []
-        for _, row in top_df.iterrows():
-            reason = build_reason(row, events_df, request.geography)
-            recommendations.append(
-                ExhibitorRecommendation(
-                    name=row["exhibitor_name"],
-                    type=ExhibitorType(row["exhibitor_type"]),
-                    score=round(float(row["score"]), 2),
-                    frequency_score=round(float(row["frequency_score"]), 4),
-                    category_match_score=round(float(row["category_match_score"]), 4),
-                    geography_match_score=round(float(row["geography_match_score"]), 4),
-                    audience_fit_score=round(float(row["audience_fit_score"]), 4),
-                    reason=reason,
-                    appeared_in_events=row["appeared_in_events"],
-                    appeared_count=int(row["frequency"]),
-                )
-            )
+        # Event history
+        event_count = info.get("event_count", 0)
+        events = info.get("events", [])
+        if event_count > 0:
+            parts.append(f"exhibited at {event_count} past event(s) including {events[0]}")
 
-        # ── Insights ─────────────────────────────────────────────────
-        insights = generate_insights(
-            scored_df=scored_df,
-            similar_events_df=similar,
-            exhibitor_pool=exhibitor_pool,
-            query_category=request.category,
-            query_geography=request.geography,
-            query_audience=request.audience_size,
-            clusters=clusters_raw,
-        )
+        return "; ".join(parts) + "."
 
-        # ── Assemble response ─────────────────────────────────────────
-        similar_events_out = [
-            SimilarEvent(
-                event_id=row["event_id"],
-                event_name=row["event_name"],
-                category=row["category"],
-                location=row["location"],
-                audience_size=int(row["audience_size"]),
-                similarity_score=round(float(row["similarity_score"]), 4),
-                year=int(row["year"]),
-            )
-            for _, row in similar.iterrows()
-        ]
+    # ── Main entry point ────────────────────────────────────────────────
 
-        # Flatten clusters for response model
-        flat_clusters: Dict[str, ClusterInfo] = {}
-        rb = clusters_raw.get("rule_based", clusters_raw)
-        for label, info in rb.items():
-            flat_clusters[label] = ClusterInfo(
-                exhibitors=info["exhibitors"],
-                count=info["count"],
-                percentage=info["percentage"],
-                top_exhibitor=info.get("top_exhibitor"),
-            )
-
-        elapsed = round(time.perf_counter() - t0, 3)
-        logger.info(f"Agent completed in {elapsed}s. Returning {len(recommendations)} recommendations.")
-
-        return RecommendationResponse(
-            query=request,
-            similar_events_used=similar_events_out,
-            recommended_exhibitors=recommendations,
-            clusters=flat_clusters,
-            insights=insights,
-            metadata={
-                "elapsed_seconds": elapsed,
-                "agent_version": self.VERSION,
-                "similar_events_count": len(similar_event_ids),
-                "candidate_pool_size": len(scored_df),
-                "data_hash": self.loader.data_hash,
-            },
-        )
-
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
-
-    def _empty_response(
+    def run(
         self,
         request: RecommendationRequest,
-        similar: pd.DataFrame,
-        events_df: pd.DataFrame,
+        memory: Optional[dict] = None,
     ) -> RecommendationResponse:
-        similar_events_out = [
-            SimilarEvent(
-                event_id=row["event_id"],
-                event_name=row["event_name"],
-                category=row["category"],
-                location=row["location"],
-                audience_size=int(row["audience_size"]),
-                similarity_score=round(float(row["similarity_score"]), 4),
-                year=int(row["year"]),
+        """
+        Execute the exhibitor recommendation pipeline.
+
+        Args:
+            request: A RecommendationRequest with category, geography, audience_size, top_n.
+            memory: Optional shared orchestrator memory dict.
+
+        Returns:
+            A RecommendationResponse with ranked exhibitor recommendations.
+        """
+        if not self._loaded:
+            self.load_data()
+
+        print(f"\n{'='*60}")
+        print(f"  [AGENT] EXHIBITOR AGENT — Starting")
+        print(f"  Category : {request.category}")
+        print(f"  Geography: {request.geography}")
+        print(f"  Audience : {request.audience_size:,}")
+        print(f"  Top N    : {request.top_n}")
+        print(f"{'='*60}")
+
+        # Score every exhibitor
+        scored: List[tuple] = []
+        for name, info in self.exhibitor_index.items():
+            relevance = self._score_exhibitor(name, info, request)
+            scored.append((name, info, relevance))
+
+        # Sort descending by score
+        scored.sort(key=lambda x: x[2], reverse=True)
+
+        # Take top_n
+        top = scored[: request.top_n]
+
+        recommendations = []
+        for name, info, relevance in top:
+            rec = ExhibitorRecommendation(
+                name=name,
+                category=info.get("type", "General"),
+                relevance_score=relevance,
+                reason=self._generate_reason(name, info, request),
+                past_events=info.get("events", [])[:5],
+                contact_email=None,
+                contact_phone=None,
+                website=None,
             )
-            for _, row in similar.iterrows()
-        ]
-        return RecommendationResponse(
-            query=request,
-            similar_events_used=similar_events_out,
-            recommended_exhibitors=[],
-            clusters={},
-            insights=["No exhibitors found for the given criteria."],
-            metadata={"agent_version": self.VERSION},
+            recommendations.append(rec)
+
+        response = RecommendationResponse(
+            event_category=request.category,
+            event_geography=request.geography,
+            total_found=len(scored),
+            recommendations=recommendations,
         )
+
+        # Persist output locally
+        self._save_output(response, request)
+
+        print(f"\n  [OK] EXHIBITOR AGENT — Returning {len(recommendations)} recommendations")
+        print(f"{'='*60}\n")
+
+        return response
+
+    # ── Persistence ─────────────────────────────────────────────────────
+
+    def _save_output(
+        self,
+        response: RecommendationResponse,
+        request: RecommendationRequest,
+    ):
+        """Save results to a local JSON file."""
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        filename = (
+            f"exhibitors_{request.category.lower().replace(' ', '_')}"
+            f"_{request.geography.lower().replace(' ', '_').replace(',', '')}.json"
+        )
+        filepath = os.path.join(OUTPUT_DIR, filename)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(response.model_dump(), f, indent=2, ensure_ascii=False)
+        print(f"  [SAVED] Results saved to {filepath}")

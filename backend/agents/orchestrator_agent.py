@@ -484,10 +484,15 @@ Do NOT include any other text outside the JSON object."""
             A dict with call_sid, call_purpose, and starting_conversation.
         """
         if not self.calling_agent:
-            raise RuntimeError(
-                "Calling agent is not initialised. "
-                "Make sure the orchestrator was created inside a Flask request context."
-            )
+            # Lazy-init: create the calling agent now (we're inside a request context)
+            try:
+                from flask import current_app
+                self.calling_agent = TwilioAgent(app=current_app._get_current_object())
+            except Exception as init_err:
+                raise RuntimeError(
+                    f"Calling agent failed to initialise: {init_err}. "
+                    "Check that Twilio, Piper, and Whisper dependencies are installed."
+                )
 
         # Use the LLM to derive a structured purpose and a conversational opener
         derivation_prompt = f"""You are an AI assistant that prepares outbound phone calls.
