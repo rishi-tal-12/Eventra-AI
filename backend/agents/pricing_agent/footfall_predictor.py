@@ -49,37 +49,40 @@ class FootfallPredictor:
         factors = 1.0
 
         # Community reach boost
-        if shared.total_community_reach > 0:
+        if shared.total_community_reach is not None and shared.total_community_reach > 0:
             reach_ratio = shared.total_community_reach / max(ctx.target_audience_size, 1)
             # Diminishing returns: lots of reach helps, but plateaus
             community_factor = 1.0 + self._sigmoid(reach_ratio, midpoint=2.0, steepness=1.5) * 0.3
             factors *= community_factor
 
         # Speaker draw factor
-        if shared.speakers_found > 0:
+        if shared.speakers_found is not None and shared.speakers_found > 0:
             # Each keynote is worth 2 regular speakers for draw
-            effective_speaker_score = shared.speakers_found + shared.keynote_count * 2
+            keynotes = shared.keynote_count if shared.keynote_count is not None else 0
+            effective_speaker_score = shared.speakers_found + keynotes * 2
             speaker_factor = 1.0 + self._sigmoid(
                 effective_speaker_score, midpoint=15, steepness=0.2
             ) * 0.2
             factors *= speaker_factor
 
         # Sponsor credibility boost (big sponsors attract attendees)
-        if shared.sponsors_found >= 5:
-            factors *= 1.08
-        elif shared.sponsors_found >= 2:
-            factors *= 1.04
+        if shared.sponsors_found is not None:
+            if shared.sponsors_found >= 5:
+                factors *= 1.08
+            elif shared.sponsors_found >= 2:
+                factors *= 1.04
 
         # GTM channels factor
-        if shared.channels_identified >= 8:
-            factors *= 1.10
-        elif shared.channels_identified >= 4:
-            factors *= 1.05
+        if shared.channels_identified is not None:
+            if shared.channels_identified >= 8:
+                factors *= 1.10
+            elif shared.channels_identified >= 4:
+                factors *= 1.05
 
         adjusted_attendance = int(round(raw_attendance * factors))
 
         # ── Cap at venue capacity ───────────────────────────────────────
-        if shared.venue_capacity > 0:
+        if shared.venue_capacity is not None and shared.venue_capacity > 0:
             adjusted_attendance = min(adjusted_attendance, shared.venue_capacity)
 
         # ── Redistribute across tiers proportionally ────────────────────
@@ -99,17 +102,17 @@ class FootfallPredictor:
         # ── Confidence interval ─────────────────────────────────────────
         # Higher uncertainty if we have less upstream data
         data_richness = sum([
-            1 if shared.total_community_reach > 0 else 0,
-            1 if shared.speakers_found > 0 else 0,
-            1 if shared.sponsors_found > 0 else 0,
-            1 if shared.venue_capacity > 0 else 0,
+            1 if shared.total_community_reach is not None and shared.total_community_reach > 0 else 0,
+            1 if shared.speakers_found is not None and shared.speakers_found > 0 else 0,
+            1 if shared.sponsors_found is not None and shared.sponsors_found > 0 else 0,
+            1 if shared.venue_capacity is not None and shared.venue_capacity > 0 else 0,
         ])
         uncertainty = 0.25 - (data_richness * 0.03)  # 25% to 13%
         uncertainty = max(0.10, uncertainty)
 
         lower_bound = max(1, int(adjusted_attendance * (1 - uncertainty)))
         upper_bound = int(adjusted_attendance * (1 + uncertainty))
-        if shared.venue_capacity > 0:
+        if shared.venue_capacity is not None and shared.venue_capacity > 0:
             upper_bound = min(upper_bound, shared.venue_capacity)
 
         return FootfallPrediction(
